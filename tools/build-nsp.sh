@@ -67,11 +67,25 @@ pack)
         exit 1
     fi
     WORK=$(mktemp -d)
+    # hacBrewPack prints the value of every key it doesn't recognize, and a full prod.keys has many console-unique
+    # ones. Give it only the keys it needs, and never show its key parsing messages.
+    grep -E '^[[:space:]]*(header_key|key_area_key_application_[0-9a-fA-F]{2})[[:space:]]*=' /keys/prod.keys > "$WORK/keys.dat" || true
+    if ! grep -q '^[[:space:]]*header_key' "$WORK/keys.dat"; then
+        rm -rf "$WORK"
+        echo "prod.keys has no header_key" >&2
+        exit 1
+    fi
     # hacBrewPack edits the NACP and npdm in place, so give it copies.
     cp -r "$STAGE/exefs" "$STAGE/control" "$WORK/"
-    "$HBP_DIR/hacbrewpack" -k /keys/prod.keys --titleid "$TITLE_ID" --nologo \
+    "$HBP_DIR/hacbrewpack" -k "$WORK/keys.dat" --titleid "$TITLE_ID" --nologo \
         --exefsdir "$WORK/exefs" --romfsdir "$STAGE/romfs" --controldir "$WORK/control" \
-        --tempdir "$WORK/temp" --ncadir "$WORK/nca" --nspdir "$WORK/nsp"
+        --tempdir "$WORK/temp" --ncadir "$WORK/nca" --nspdir "$WORK/nsp" 2>&1 \
+        | grep -viE 'key|[0-9a-f]{32}' || true
+    if ! ls "$WORK"/nsp/*.nsp > /dev/null 2>&1; then
+        rm -rf "$WORK"
+        echo "hacBrewPack failed" >&2
+        exit 1
+    fi
     mkdir -p dist
     cp "$WORK"/nsp/*.nsp dist/BM64Recompiled.nsp
     rm -rf "$WORK"
