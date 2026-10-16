@@ -350,8 +350,13 @@ void autostart_game() {
     }
 
     if (!recomp::is_rom_valid(game_id)) {
+#ifdef __SWITCH__
+        std::string message = "No valid Bomberman 64 (USA) ROM was found.\n\nPlace your Bomberman 64 (USA) ROM (.z64, .n64 or .v64) "
+            "on the SD card, in sdmc:/switch/bm64recomp/, sdmc:/switch/ or the root of the card.";
+#else
         std::string message = "No valid Bomberman 64 (USA) ROM was found.\n\nPlace your Bomberman 64 (USA) ROM (.z64, .n64 or .v64) in:\n" +
             zelda64::get_app_folder_path().string();
+#endif
         recompui::message_box(message.c_str());
         ultramodern::quit();
         return;
