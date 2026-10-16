@@ -36,3 +36,7 @@ run-*/
 .vs/
 .DS_Store
 imgui.ini
+
+# Console keys and installable packages: never commit them
+*.keys
+*.nsp

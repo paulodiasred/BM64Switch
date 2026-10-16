@@ -42,6 +42,18 @@ and runs on [N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime). T
 On first launch the ROM is validated and copied to `sdmc:/switch/bm64recomp/`. Settings, saves, the shader cache and
 the logs (`bm64.log`, `bm64-err.log`) also live in that folder.
 
+### Optional: install as an NSP (icon on the HOME menu)
+
+The game can also be installed as a regular title. It then shows up on the HOME menu, launches directly with full
+memory (no need to hold R) and doesn't need the `.nro`.
+
+1. Build `dist\BM64Recompiled.nsp` with `.\build.ps1 nsp C:\path\prod.keys`. You need your own console's
+   `prod.keys`, dumped with Lockpick_RCM. The keys stay on your PC: only the packing step reads them, from a
+   container without network access, and they never go into the repository.
+2. Install it with a title installer (DBI, Tinfoil, Goldleaf...). Installing NSPs requires sigpatches in Atmosphère.
+3. The ROM goes in the same places as above. Settings and saves are shared with the `.nro`
+   (`sdmc:/switch/bm64recomp/`).
+
 **Settings menu:** press **−** (Minus) to open or close it. It has these tabs:
 - **Graphics:** internal resolution, anti-aliasing, texture filtering, VSync, FPS and the Switch CPU clock.
 - **Sound.**

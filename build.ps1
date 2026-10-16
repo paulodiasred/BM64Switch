@@ -6,6 +6,7 @@
     .\build.ps1 generate C:\roms\bomberman64.z64   # once: recompiles the game from your ROM
     .\build.ps1 switch                             # dist\BM64Recompiled.nro
     .\build.ps1 all C:\roms\bomberman64.z64        # generate + switch
+    .\build.ps1 nsp C:\keys\prod.keys              # dist\BM64Recompiled.nsp (installable, icon on HOME)
     .\build.ps1 patches                            # after editing patches\*.c
     .\build.ps1 linux                              # Linux test build (build-linux\)
     .\build.ps1 test run.sh                        # runs a tools\test script headless (needs the ROM in run\)
@@ -13,7 +14,7 @@
 #>
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('generate', 'patches', 'switch', 'linux', 'test', 'all', 'shell', 'clean')]
+    [ValidateSet('generate', 'patches', 'switch', 'nsp', 'linux', 'test', 'all', 'shell', 'clean')]
     [string]$Command = 'switch',
 
     [Parameter(Position = 1, ValueFromRemainingArguments = $true)]
@@ -71,6 +72,21 @@ switch ($Command) {
         Invoke-Container $HostImage 'bash tools/generate.sh patches'
     }
     'switch' { Invoke-SwitchBuild }
+    'nsp' {
+        $Keys = $Rest[0]
+        if (-not $Keys) { $Keys = Join-Path $HOME '.switch\prod.keys' }
+        if (-not (Test-Path -LiteralPath $Keys)) {
+            throw "prod.keys not found ($Keys). Usage: .\build.ps1 nsp <path to your console's prod.keys>"
+        }
+        $KeysItem = Get-Item -LiteralPath $Keys
+        Invoke-SwitchBuild
+        Invoke-Container $HostImage 'bash tools/build-nsp.sh fetch'
+        Invoke-Container $SwitchImage 'bash tools/build-nsp.sh stage'
+        # The only step that sees the keys runs without network access, with just the key file mounted read-only.
+        $KeyMount = @('--network', 'none', '-v', "$($KeysItem.FullName):/keys/prod.keys:ro")
+        Invoke-Container $HostImage 'bash tools/build-nsp.sh pack' $KeyMount
+        Write-Host "Done: $(Join-Path $Root 'dist\BM64Recompiled.nsp')"
+    }
     'linux' {
         Invoke-Setup
         Invoke-Container $HostImage 'bash tools/build-linux.sh'
