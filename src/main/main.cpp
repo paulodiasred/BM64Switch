@@ -7,25 +7,13 @@
 #include <numeric>
 #include <stdexcept>
 #include <cinttypes>
-
-#include "nfd.h"
+#include <algorithm>
+#include <cctype>
 
 #include "ultramodern/ultra64.h"
 #include "ultramodern/ultramodern.hpp"
 #define SDL_MAIN_HANDLED
-#ifdef _WIN32
-#include "SDL.h"
-#else
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_syswm.h"
-// Undefine x11 macros that get included by SDL_syswm.h.
-#undef None
-#undef Status
-#undef LockMask
-#undef ControlMask
-#undef Success
-#undef Always
-#endif
 
 #include "recomp_ui.h"
 #include "recomp_input.h"
@@ -49,16 +37,16 @@
 
 // #include "mods/mm_recomp_dpad_builtin.h"
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <timeapi.h>
-#include "SDL_syswm.h"
-#endif
-
-#include "../../lib/rt64/src/contrib/stb/stb_image.h"
-
 const std::string version_string = "1.0.0";
+
+#ifdef __SWITCH__
+#include <switch.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+// Folder the .nro was launched from, also searched for the ROM.
+static std::filesystem::path launch_folder;
+#endif
 
 template<typename... Ts>
 void exit_error(const char* str, Ts ...args) {
@@ -86,99 +74,13 @@ ultramodern::gfx_callbacks_t::gfx_data_t create_gfx() {
     return {};
 }
 
-#if defined(__gnu_linux__)
-#include "icon_bytes.h"
-
-bool SetImageAsIcon(const char* filename, SDL_Window* window)
-{
-    // Read data
-    int width, height, bytesPerPixel;
-    void* data = stbi_load_from_memory(reinterpret_cast<const uint8_t*>(icon_bytes), sizeof(icon_bytes), &width, &height, &bytesPerPixel, 4);
-
-    // Calculate pitch
-    int pitch;
-    pitch = width * 4;
-    pitch = (pitch + 3) & ~3;
-
-    // Setup relevance bitmask
-    int Rmask, Gmask, Bmask, Amask;
-
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-    Rmask = 0x000000FF;
-    Gmask = 0x0000FF00;
-    Bmask = 0x00FF0000;
-    Amask = 0xFF000000;
-#else
-    Rmask = 0xFF000000;
-    Gmask = 0x00FF0000;
-    Bmask = 0x0000FF00;
-    Amask = 0x000000FF;
-#endif
-
-    SDL_Surface* surface = nullptr;
-    if (data != nullptr) {
-        surface = SDL_CreateRGBSurfaceFrom(data, width, height, 32, pitch, Rmask, Gmask,
-                            Bmask, Amask);
-    }
-
-    if (surface == nullptr) {   
-        if (data != nullptr) {
-            stbi_image_free(data);
-        }
-        return false;
-	} else {
-        SDL_SetWindowIcon(window,surface);
-        SDL_FreeSurface(surface);
-        stbi_image_free(data);
-        return true;
-    }
-}
-#endif
-
-SDL_Window* window;
-
+// libultraship creates the window, its GL context and pumps SDL events on the graphics thread, so there's
+// no window for the main thread to create or update.
 ultramodern::renderer::WindowHandle create_window(ultramodern::gfx_callbacks_t::gfx_data_t) {
-    uint32_t flags = SDL_WINDOW_RESIZABLE;
-
-#if defined(__APPLE__)
-    flags |= SDL_WINDOW_METAL;
-#elif defined(RT64_SDL_WINDOW_VULKAN)
-    flags |= SDL_WINDOW_VULKAN;
-#endif
-
-    window = SDL_CreateWindow("Bomberman 64: Recompiled", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1600, 960,  flags);
-#if defined(__linux__)
-    SetImageAsIcon("icons/512.png",window);
-    if (ultramodern::renderer::get_graphics_config().wm_option == ultramodern::renderer::WindowMode::Fullscreen) { // TODO: Remove once RT64 gets native fullscreen support on Linux
-        SDL_SetWindowFullscreen(window,SDL_WINDOW_FULLSCREEN_DESKTOP);
-    } else {
-        SDL_SetWindowFullscreen(window,0);
-    }
-#endif
-
-    if (window == nullptr) {
-        exit_error("Failed to create window: %s\n", SDL_GetError());
-    }
-
-    SDL_SysWMinfo wmInfo;
-    SDL_VERSION(&wmInfo.version);
-    SDL_GetWindowWMInfo(window, &wmInfo);
-
-#if defined(_WIN32)
-    return ultramodern::renderer::WindowHandle{ wmInfo.info.win.window, GetCurrentThreadId() };
-#elif defined(__linux__) || defined(__ANDROID__)
-    return ultramodern::renderer::WindowHandle{ window };
-#elif defined(__APPLE__)
-    SDL_MetalView view = SDL_Metal_CreateView(window);
-    return ultramodern::renderer::WindowHandle{ wmInfo.info.cocoa.window,  SDL_Metal_GetLayer(view) };
-#else
-    static_assert(false && "Unimplemented");
-#endif
+    return {};
 }
 
-void update_gfx(void*) {
-    recomp::handle_events();
-}
+void update_gfx(void*) {}
 
 static SDL_AudioCVT audio_convert;
 static SDL_AudioDeviceID audio_device = 0;
@@ -311,7 +213,12 @@ void reset_audio(uint32_t output_freq) {
         .format = AUDIO_F32,
         .channels = (Uint8)output_channels,
         .silence = 0, // calculated
+#ifdef __SWITCH__
+        // The Switch's audio output can't keep up with tiny buffers (constant underruns crackle and hiss).
+        .samples = 0x800,
+#else
         .samples = 0x100, // Fairly small sample count to reduce the latency of internal buffering
+#endif
         .padding = 0, // unused
         .size = 0, // calculated
         .callback = nullptr,
@@ -406,182 +313,89 @@ namespace zelda64 {
     }
 }
 
-#ifdef _WIN32
+// There's no launcher menu, so start the game as soon as the renderer is up. The ROM is taken from the stored copy
+// or, on first boot, from any N64 ROM file (.z64, .n64 or .v64, any byte order) in the app or program folder.
+void autostart_game() {
+    std::u8string game_id = supported_games[0].game_id;
 
-struct PreloadContext {
-    HANDLE handle;
-    HANDLE mapping_handle;
-    SIZE_T size;
-    PVOID view;
-};
-
-bool preload_executable(PreloadContext& context) {
-    wchar_t module_name[MAX_PATH];
-    GetModuleFileNameW(NULL, module_name, MAX_PATH);
-
-    context.handle = CreateFileW(module_name, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (context.handle == INVALID_HANDLE_VALUE) {
-        fprintf(stderr, "Failed to load executable into memory!");
-        context = {};
-        return false;
-    }
-
-    LARGE_INTEGER module_size;
-    if (!GetFileSizeEx(context.handle, &module_size)) {
-        fprintf(stderr, "Failed to get size of executable!");
-        CloseHandle(context.handle);
-        context = {};
-        return false;
-    }
-
-    context.size = module_size.QuadPart;
-
-    context.mapping_handle = CreateFileMappingW(context.handle, nullptr, PAGE_READONLY, 0, 0, nullptr);
-    if (context.mapping_handle == nullptr) {
-        fprintf(stderr, "Failed to create file mapping of executable!");
-        CloseHandle(context.handle);
-        context = {};
-        return EXIT_FAILURE;
-    }
-
-    context.view = MapViewOfFile(context.mapping_handle, FILE_MAP_READ, 0, 0, 0);
-    if (context.view == nullptr) {
-        fprintf(stderr, "Failed to map view of of executable!");
-        CloseHandle(context.mapping_handle);
-        CloseHandle(context.handle);
-        context = {};
-        return false;
-    }
-
-    DWORD pid = GetCurrentProcessId();
-    HANDLE process_handle = OpenProcess(PROCESS_SET_QUOTA | PROCESS_QUERY_INFORMATION, FALSE, pid);
-    if (process_handle == nullptr) {
-        fprintf(stderr, "Failed to open own process!");
-        CloseHandle(context.mapping_handle);
-        CloseHandle(context.handle);
-        context = {};
-        return false;
-    }
-
-    SIZE_T minimum_set_size, maximum_set_size;
-    if (!GetProcessWorkingSetSize(process_handle, &minimum_set_size, &maximum_set_size)) {
-        fprintf(stderr, "Failed to get working set size!");
-        CloseHandle(context.mapping_handle);
-        CloseHandle(context.handle);
-        context = {};
-        return false;
-    }
-
-    if (!SetProcessWorkingSetSize(process_handle, minimum_set_size + context.size, maximum_set_size + context.size)) {
-        fprintf(stderr, "Failed to set working set size!");
-        CloseHandle(context.mapping_handle);
-        CloseHandle(context.handle);
-        context = {};
-        return false;
-    }
-
-    if (VirtualLock(context.view, context.size) == 0) {
-        fprintf(stderr, "Failed to lock view of executable! (Error: %08lx)\n", GetLastError());
-        CloseHandle(context.mapping_handle);
-        CloseHandle(context.handle);
-        context = {};
-        return false;
-    }
-    
-    return true;
-}
-
-void release_preload(PreloadContext& context) {
-    VirtualUnlock(context.view, context.size);
-    CloseHandle(context.mapping_handle);
-    CloseHandle(context.handle);
-    context = {};
-}
-
+    if (!recomp::is_rom_valid(game_id)) {
+#ifdef __SWITCH__
+        const std::filesystem::path search_dirs[] = { zelda64::get_app_folder_path(), launch_folder, "sdmc:/switch", "sdmc:/" };
 #else
-
-struct PreloadContext {
-
-};
-
-// TODO implement on other platforms
-bool preload_executable(PreloadContext& context) {
-    return false;
-}
-
-void release_preload(PreloadContext& context) {
-}
-
+        const std::filesystem::path search_dirs[] = { zelda64::get_app_folder_path(), zelda64::get_program_path(), std::filesystem::current_path() };
 #endif
+        for (const auto& dir : search_dirs) {
+            // Iterate with error codes: the throwing filesystem calls fail on some Switch paths.
+            std::error_code ec;
+            std::filesystem::directory_iterator it(dir.empty() ? "." : dir, ec);
+            for (; !ec && it != std::filesystem::directory_iterator(); it.increment(ec)) {
+                const std::filesystem::path path = it->path();
+                std::string ext = path.extension().string();
+                std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return std::tolower(c); });
+                if (ext != ".z64" && ext != ".n64" && ext != ".v64") {
+                    continue;
+                }
+                // select_rom stores a copy of the ROM when it matches, which makes is_rom_valid true.
+                recomp::RomValidationError error = recomp::select_rom(path, game_id);
+                fprintf(stdout, "ROM %s: %s\n", path.string().c_str(), error == recomp::RomValidationError::Good ? "valid" : "rejected");
+                if (error == recomp::RomValidationError::Good) {
+                    recomp::check_all_stored_roms();
+                    break;
+                }
+            }
+            if (recomp::is_rom_valid(game_id)) {
+                break;
+            }
+        }
+    }
 
-void enable_texture_pack(recomp::mods::ModContext& context, const recomp::mods::ModHandle& mod) {
-    zelda64::renderer::enable_texture_pack(context, mod);
+    if (!recomp::is_rom_valid(game_id)) {
+        std::string message = "No valid Bomberman 64 (USA) ROM was found.\n\nPlace your Bomberman 64 (USA) ROM (.z64, .n64 or .v64) in:\n" +
+            zelda64::get_app_folder_path().string();
+        recompui::message_box(message.c_str());
+        ultramodern::quit();
+        return;
+    }
+
+    recomp::start_game(game_id);
 }
 
-void disable_texture_pack(recomp::mods::ModContext&, const recomp::mods::ModHandle& mod) {
-    zelda64::renderer::disable_texture_pack(mod);
+void on_gfx_init() {
+    recompui::update_supported_options();
 }
 
-void reorder_texture_pack(recomp::mods::ModContext&) {
-    zelda64::renderer::trigger_texture_pack_update();
-}
 
 #define REGISTER_FUNC(name) recomp::overlays::register_base_export(#name, name)
 
 int main(int argc, char** argv) {
     (void)argc;
     (void)argv;
+
+#ifdef __SWITCH__
+    // Shaders and the controller database are embedded in the .nro's RomFS, so the .nro is the only file to install.
+    romfsInit();
+    std::error_code switch_ec;
+    launch_folder = std::filesystem::current_path(switch_ec);
+    // std::filesystem doesn't understand the "sdmc:" device prefix when walking parent folders, so create them directly.
+    mkdir("sdmc:/switch", 0777);
+    mkdir("sdmc:/switch/bm64recomp", 0777);
+    chdir("sdmc:/switch/bm64recomp");
+
+    // There's no console on the Switch, so keep logs on the SD card, unbuffered so they survive a crash.
+    // stderr gets its own file because the SD card can't have one file open for writing twice.
+    if (freopen("sdmc:/switch/bm64recomp/bm64.log", "w", stdout) != nullptr) {
+        setvbuf(stdout, nullptr, _IONBF, 0);
+    }
+    if (freopen("sdmc:/switch/bm64recomp/bm64-err.log", "w", stderr) != nullptr) {
+        setvbuf(stderr, nullptr, _IONBF, 0);
+    }
+    printf("[Switch] applet type %d, launched from %s\n", (int)appletGetAppletType(), launch_folder.string().c_str());
+#endif
     recomp::Version project_version{};
     if (!recomp::Version::from_string(version_string, project_version)) {
         ultramodern::error_handling::message_box(("Invalid version string: " + version_string).c_str());
         return EXIT_FAILURE;
     }
-
-    // Map this executable into memory and lock it, which should keep it in physical memory. This ensures
-    // that there are no stutters from the OS having to load new pages of the executable whenever a new code page is run.
-    PreloadContext preload_context;
-    bool preloaded = preload_executable(preload_context);
-
-    if (!preloaded) {
-        fprintf(stderr, "Failed to preload executable!\n");
-    }
-
-#ifdef _WIN32
-    // Set up high resolution timing period.
-    timeBeginPeriod(1);
-
-    // Process arguments.
-    
-    // Set up console output to accept UTF-8 on windows
-    SetConsoleOutputCP(CP_UTF8);
-
-    // Initialize native file dialogs.
-    NFD_Init();
-
-    // Change to a font that supports Japanese characters
-    CONSOLE_FONT_INFOEX cfi;
-    cfi.cbSize = sizeof cfi;
-    cfi.nFont = 0;
-    cfi.dwFontSize.X = 0;
-    cfi.dwFontSize.Y = 16;
-    cfi.FontFamily = FF_DONTCARE;
-    cfi.FontWeight = FW_NORMAL;
-    wcscpy_s(cfi.FaceName, L"NSimSun");
-    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
-#endif
-
-#ifdef _WIN32
-    // Force wasapi on Windows, as there seems to be some issue with sample queueing with directsound currently.
-    SDL_setenv("SDL_AUDIODRIVER", "wasapi", true);
-#endif
-
-#if defined(__linux__) && defined(RECOMP_FLATPAK)
-    // When using Flatpak, applications tend to launch from the home directory by default.
-    // Mods might use the current working directory to store the data, so we switch it to a directory
-    // with persistent data storage and write permissions under Flatpak to ensure it works.
-    std::error_code ec;
-    std::filesystem::current_path("/var/data", ec);
-#endif
 
     // Initialize SDL audio and set the output frequency.
     SDL_InitSubSystem(SDL_INIT_AUDIO);
@@ -660,7 +474,7 @@ int main(int argc, char** argv) {
 
     ultramodern::events::callbacks_t thread_callbacks{
         .vi_callback = recomp::update_rumble,
-        .gfx_init_callback = recompui::update_supported_options,
+        .gfx_init_callback = on_gfx_init,
     };
 
     ultramodern::error_handling::callbacks_t error_handling_callbacks{
@@ -670,19 +484,6 @@ int main(int argc, char** argv) {
     ultramodern::threads::callbacks_t threads_callbacks{
         .get_game_thread_name = zelda64::get_game_thread_name,
     };
-
-    // Register the texture pack content type with rt64.json as its content file.
-    recomp::mods::ModContentType texture_pack_content_type{
-        .content_filename = "rt64.json",
-        .allow_runtime_toggle = true,
-        .on_enabled = enable_texture_pack,
-        .on_disabled = disable_texture_pack,
-        .on_reordered = reorder_texture_pack,
-    };
-    auto texture_pack_content_type_id = recomp::mods::register_mod_content_type(texture_pack_content_type);
-
-    // Register the .rtz texture pack file format with the previous content type as its only allowed content type.
-    recomp::mods::register_mod_container_type("rtz", std::vector{ texture_pack_content_type_id }, false);
 
     recomp::Configuration cfg{
         .project_version = project_version,
@@ -700,16 +501,5 @@ int main(int argc, char** argv) {
 
     recomp::start(cfg);
 
-    NFD_Quit();
-
-    if (preloaded) {
-        release_preload(preload_context);
-    }
-    
-    #ifdef _WIN32
-    // End high resolution timing period.
-    timeEndPeriod(1);
-    #endif
-    
     return EXIT_SUCCESS;
 }

@@ -10,13 +10,11 @@
 #include <fstream>
 #include <iomanip>
 
-#if defined(_WIN32)
-#include <Shlobj.h>
-#elif defined(__linux__)
+using json = nlohmann::json;
+
+#if defined(__linux__) && !defined(__SWITCH__)
 #include <unistd.h>
 #include <pwd.h>
-#elif defined(__APPLE__)
-#include "apple/rt64_apple.h"
 #endif
 
 constexpr std::u8string_view general_filename = u8"general.json";
@@ -134,59 +132,32 @@ namespace recomp {
 }
 
 std::filesystem::path zelda64::get_app_folder_path() {
-   // directly check for portable.txt (windows and native linux binary)
-   if (std::filesystem::exists("portable.txt")) {
-       return std::filesystem::current_path();
-   }
+#if defined(__SWITCH__)
+    // The ROM copy, config and saves live in a fixed folder on the SD card, wherever the .nro itself is.
+    // main() also makes it the working directory, where libultraship keeps its own files.
+    return std::filesystem::path{"sdmc:/switch/bm64recomp"};
+#else
+    // Linux test build: portable.txt in the working directory, APP_FOLDER_PATH or ~/.config/<program id>.
+    std::error_code portable_ec;
+    if (std::filesystem::exists("portable.txt", portable_ec)) {
+        return std::filesystem::current_path();
+    }
 
-#if defined(__APPLE__)
-   // Check for portable file in the directory containing the app bundle.
-   const auto app_bundle_path = zelda64::get_bundle_directory().parent_path();
-   if (std::filesystem::exists(app_bundle_path / "portable.txt")) {
-       return app_bundle_path;
-   }
-#endif
+    if (const char* app_folder = getenv("APP_FOLDER_PATH")) {
+        return std::filesystem::path{app_folder};
+    }
 
-   std::filesystem::path recomp_dir{};
+    const char* homedir = getenv("HOME");
+    if (homedir == nullptr) {
+        homedir = getpwuid(getuid())->pw_dir;
+    }
 
-#if defined(_WIN32)
-   // Deduce local app data path.
-   PWSTR known_path = NULL;
-   HRESULT result = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &known_path);
-   if (result == S_OK) {
-       recomp_dir = std::filesystem::path{known_path} / zelda64::program_id;
-   }
-
-   CoTaskMemFree(known_path);
-#elif defined(__linux__) || defined(__APPLE__)
-   // check for APP_FOLDER_PATH env var
-   if (getenv("APP_FOLDER_PATH") != nullptr) {
-       return std::filesystem::path{getenv("APP_FOLDER_PATH")};
-   }
-
-#if defined(__APPLE__)
-   const auto supportdir = zelda64::get_application_support_directory();
-   if (supportdir) {
-       return *supportdir / zelda64::program_id;
-   }
-#endif
-
-   const char *homedir;
-
-   if ((homedir = getenv("HOME")) == nullptr) {
-    #if defined(__linux__)
-       homedir = getpwuid(getuid())->pw_dir;
-    #elif defined(__APPLE__)
-        homedir = GetHomeDirectory();
-    #endif
-   }
-
-   if (homedir != nullptr) {
-       recomp_dir = std::filesystem::path{homedir} / (std::u8string{u8".config/"} + std::u8string{zelda64::program_id});
-   }
-#endif
-
+    std::filesystem::path recomp_dir{};
+    if (homedir != nullptr) {
+        recomp_dir = std::filesystem::path{homedir} / (std::u8string{u8".config/"} + std::u8string{zelda64::program_id});
+    }
     return recomp_dir;
+#endif
 }
 
 bool read_json(std::ifstream input_file, nlohmann::json& json_out) {
@@ -525,7 +496,8 @@ void zelda64::load_config() {
     std::filesystem::path cheats_path = recomp_dir / cheats_filename;
 
     if (!recomp_dir.empty()) {
-        std::filesystem::create_directories(recomp_dir);
+        std::error_code dir_ec;
+        std::filesystem::create_directories(recomp_dir, dir_ec);
     }
 
     // TODO error handling for failing to save config files after resetting them.
@@ -564,7 +536,8 @@ void zelda64::save_config() {
         return;
     }
 
-    std::filesystem::create_directories(recomp_dir);
+    std::error_code dir_ec;
+    std::filesystem::create_directories(recomp_dir, dir_ec);
 
     // TODO error handling for failing to save config files.
 

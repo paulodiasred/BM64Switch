@@ -1,0 +1,19 @@
+diff --git a/include/recomp.h b/include/recomp.h
+index 73f3e73..2b3da50 100644
+--- a/include/recomp.h
++++ b/include/recomp.h
+@@ -27,7 +27,13 @@
+     // Use GCC's attribute for disabling inter-procedural optimizations. Also enable the rounding-math compiler flag to disable
+     // constant folding so that arithmetic respects the floating point environment. This is needed because gcc doesn't implement
+     // any FENV_ACCESS pragma.
+-    #define RECOMP_FUNC __attribute__((noipa, optimize("rounding-math")))
++    // Unlike the clang definition this isn't weak, so builds that link patches over the original functions define
++    // RECOMP_WEAK_FUNCS for the original functions only, letting the patched versions take precedence.
++    #ifdef RECOMP_WEAK_FUNCS
++        #define RECOMP_FUNC __attribute__((weak, noipa, optimize("rounding-math")))
++    #else
++        #define RECOMP_FUNC __attribute__((noipa, optimize("rounding-math")))
++    #endif
+ 
+     // There's no FENV_ACCESS pragma in gcc, so this can be empty.
+     #define SET_FENV_ACCESS()

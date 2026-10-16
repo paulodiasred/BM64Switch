@@ -1,0 +1,75 @@
+diff --git a/include/fast/interpreter.h b/include/fast/interpreter.h
+index d4b410b8..027924b3 100644
+--- a/include/fast/interpreter.h
++++ b/include/fast/interpreter.h
+@@ -413,6 +413,9 @@ class Interpreter {
+     ShaderProgram* LookupOrCreateShaderProgram(uint64_t id0, uint64_t id1);
+     ColorCombiner* LookupOrCreateColorCombiner(const ColorCombinerKey& key);
+     void ShaderCacheClear();
++    // Creates the shaders listed in the given file, then appends every shader created from then on to it, so later
++    // runs don't stall compiling them mid-game (shader compilation is slow on some platforms, like the Switch).
++    void EnablePersistentShaderList(const std::string& path);
+     void TextureCacheClear();
+     bool TextureCacheLookup(int i, const TextureCacheKey& key);
+     void TextureCacheDelete(const uint8_t* origAddr);
+@@ -519,6 +522,7 @@ class Interpreter {
+     GfxRenderingAPI* mRapi = nullptr;
+ 
+     uintptr_t mSegmentPointers[MAX_SEGMENT_POINTERS]{};
++    FILE* mShaderListFile = nullptr;
+ 
+     bool mFbActive{};
+     bool mRendersToFb{}; // game_renders_to_framebuffer;
+diff --git a/src/fast/interpreter.cpp b/src/fast/interpreter.cpp
+index 028c3cc4..67d0814d 100644
+--- a/src/fast/interpreter.cpp
++++ b/src/fast/interpreter.cpp
+@@ -146,10 +146,34 @@ ShaderProgram* Interpreter::LookupOrCreateShaderProgram(uint64_t id0, uint64_t i
+         mRapi->UnloadShader(mRenderingState.mShaderProgram);
+         prg = mRapi->CreateAndLoadNewShader(id0, id1);
+         mRenderingState.mShaderProgram = prg;
++        if (mShaderListFile != nullptr) {
++            const uint64_t ids[2] = { id0, id1 };
++            fwrite(ids, sizeof(ids), 1, mShaderListFile);
++            fflush(mShaderListFile);
++        }
+     }
+     return prg;
+ }
+ 
++void Interpreter::EnablePersistentShaderList(const std::string& path) {
++    // Guards against a corrupted file making startup take forever.
++    constexpr size_t max_shaders = 4096;
++    size_t created = 0;
++    if (FILE* in = fopen(path.c_str(), "rb")) {
++        uint64_t ids[2];
++        while (created < max_shaders && fread(ids, sizeof(ids), 1, in) == 1) {
++            if (mRapi->LookupShader(ids[0], ids[1]) == nullptr) {
++                ShaderProgram* prg = mRapi->CreateAndLoadNewShader(ids[0], ids[1]);
++                mRapi->UnloadShader(prg);
++                created++;
++            }
++        }
++        fclose(in);
++    }
++    SPDLOG_INFO("Precompiled {} shaders from {}", created, path);
++    mShaderListFile = fopen(path.c_str(), "ab");
++}
++
+ const char* Interpreter::CCMUXtoStr(uint32_t ccmux) {
+     static constexpr std::array tbl = {
+         "G_CCMUX_COMBINED",
+@@ -4827,7 +4851,13 @@ void Interpreter::Init(class GfxWindowBackend* wapi, class GfxRenderingAPI* rapi
+ 
+     if (mTexUploadBuffer == nullptr) {
+         // We cap texture max to 8k, because why would you need more?
++#ifdef __SWITCH__
++        // 8k needs a 256MB upload buffer, more than homebrew in applet mode can allocate. 2k (16MB) still covers
++        // every N64 texture and framebuffer.
++        int max_tex_size = std::min(2048, mRapi->GetMaxTextureSize());
++#else
+         int max_tex_size = std::min(8192, mRapi->GetMaxTextureSize());
++#endif
+         mTexUploadBuffer = (uint8_t*)malloc(max_tex_size * max_tex_size * 4);
+     }
+ 

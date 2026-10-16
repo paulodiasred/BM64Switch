@@ -775,13 +775,11 @@ typedef struct FBInfo {
     /* 0x68 */ f32 lry;
 } FBInfo; // size:0x6C
 
-#ifdef ENABLE_WIDESCREEN_ASPECT_CHANGES
-#define VIEWPORT_SCALE  0.9625
-#define VIEWPORT_OFFSET 6
-#else
+// The PC port shrinks the 3D viewport (scale 0.9625, offset 6) because RT64 extends the 3D view past it in
+// widescreen. libultraship draws exactly the viewport it gets, so the shrink would leave a border of the backdrop
+// color around the 3D view.
 #define VIEWPORT_SCALE  1
 #define VIEWPORT_OFFSET 0
-#endif
 
 RECOMP_PATCH void func_80227D50(FBInfo* fb, u32 ulx, u32 uly, u32 width, u32 height) {
     fb->vp.vp.vscale[0] = ((width * 2) * VIEWPORT_SCALE) - VIEWPORT_OFFSET;

@@ -1,0 +1,391 @@
+diff --git a/librecomp/include/librecomp/addresses.hpp b/librecomp/include/librecomp/addresses.hpp
+index b1b50cb..c368ec5 100644
+--- a/librecomp/include/librecomp/addresses.hpp
++++ b/librecomp/include/librecomp/addresses.hpp
+@@ -6,8 +6,15 @@
+ #include "recomp.h"
+ 
+ namespace recomp {
+-    // 512GB (kseg0 size)
++#if defined(__SWITCH__) || defined(RECOMP_SMALL_RDRAM)
++    // The Switch allocates this memory up front (there's no reserve-without-commit), and homebrew launched in applet
++    // mode only gets a few hundred MB. 32MB covers the 8MB of RDRAM, extended RAM for patches (up to 16MB) and the
++    // recomp heap.
++    constexpr size_t mem_size = 32ULL * 1024ULL * 1024ULL;
++#else
++    // 512MB (kseg0 size)
+     constexpr size_t mem_size = 512ULL * 1024ULL * 1024ULL;
++#endif
+     // 4GB (the full address space)
+     constexpr size_t allocation_size = 4096ULL * 1024ULL * 1024ULL;
+     // We need a place in rdram to hold the PI handles, so pick an address in extended rdram
+diff --git a/librecomp/src/files.cpp b/librecomp/src/files.cpp
+index af6f18d..014b733 100644
+--- a/librecomp/src/files.cpp
++++ b/librecomp/src/files.cpp
+@@ -1,3 +1,5 @@
++#include <cstdio>
++
+ #include "files.hpp"
+ 
+ constexpr std::u8string_view backup_suffix = u8".bak";
+@@ -28,6 +30,43 @@ std::ofstream recomp::open_output_file_with_backup(const std::filesystem::path&
+     return temp_file_out;
+ }
+ 
++#ifdef __SWITCH__
++// std::filesystem::copy_file relies on syscalls libnx doesn't implement, so copy with stdio instead.
++static bool copy_file_contents(const std::filesystem::path& from, const std::filesystem::path& to, std::error_code& ec) {
++    ec.clear();
++    FILE* in = fopen(from.string().c_str(), "rb");
++    if (in == nullptr) {
++        ec = std::make_error_code(std::errc::no_such_file_or_directory);
++        return false;
++    }
++    FILE* out = fopen(to.string().c_str(), "wb");
++    if (out == nullptr) {
++        fclose(in);
++        ec = std::make_error_code(std::errc::permission_denied);
++        return false;
++    }
++    char buffer[16 * 1024];
++    size_t count;
++    bool ok = true;
++    while ((count = fread(buffer, 1, sizeof(buffer), in)) > 0) {
++        if (fwrite(buffer, 1, count, out) != count) {
++            ok = false;
++            break;
++        }
++    }
++    fclose(in);
++    if (fclose(out) != 0 || !ok) {
++        ec = std::make_error_code(std::errc::io_error);
++        return false;
++    }
++    return true;
++}
++#else
++static bool copy_file_contents(const std::filesystem::path& from, const std::filesystem::path& to, std::error_code& ec) {
++    return std::filesystem::copy_file(from, to, std::filesystem::copy_options::overwrite_existing, ec);
++}
++#endif
++
+ bool recomp::finalize_output_file_with_backup(const std::filesystem::path& filepath) {
+     std::filesystem::path backup_path{filepath};
+     backup_path += backup_suffix;
+@@ -37,12 +76,12 @@ bool recomp::finalize_output_file_with_backup(const std::filesystem::path& filep
+ 
+     std::error_code ec;
+     if (std::filesystem::exists(filepath, ec)) {
+-        std::filesystem::copy_file(filepath, backup_path, std::filesystem::copy_options::overwrite_existing, ec);
++        copy_file_contents(filepath, backup_path, ec);
+         if (ec) {
+             return false;
+         }
+     }
+-    std::filesystem::copy_file(temp_path, filepath, std::filesystem::copy_options::overwrite_existing, ec);
++    copy_file_contents(temp_path, filepath, ec);
+     if (ec) {
+         return false;
+     }
+diff --git a/librecomp/src/mods.cpp b/librecomp/src/mods.cpp
+index ff40212..7822b86 100644
+--- a/librecomp/src/mods.cpp
++++ b/librecomp/src/mods.cpp
+@@ -165,6 +165,40 @@ void protect(void* target_func, uint64_t old_flags) {
+         &dummy_old_flags);
+     (void)result;
+ }
++#elif defined(__SWITCH__)
++// Homebrew can't load native libraries or change page protections, so code mods with native libraries never load.
++class recomp::mods::DynamicLibrary {
++public:
++    static constexpr std::string_view PlatformExtension = ".nro";
++    DynamicLibrary() = default;
++    DynamicLibrary(const std::filesystem::path&) {}
++    DynamicLibrary(const DynamicLibrary&) = delete;
++    DynamicLibrary& operator=(const DynamicLibrary&) = delete;
++    DynamicLibrary(DynamicLibrary&&) = delete;
++    DynamicLibrary& operator=(DynamicLibrary&&) = delete;
++
++    void unload() {}
++
++    bool good() const {
++        return false;
++    }
++
++    template <typename T>
++    bool get_dll_symbol(T& out, const char*) const {
++        out = nullptr;
++        return false;
++    };
++
++    uint32_t get_api_version() {
++        return (uint32_t)-1;
++    }
++};
++
++void unprotect(void*, uint64_t* old_flags) {
++    *old_flags = 0;
++}
++
++void protect(void*, uint64_t) {}
+ #else
+ #  include <unistd.h>
+ #  include <dlfcn.h>
+diff --git a/librecomp/src/pi.cpp b/librecomp/src/pi.cpp
+index 43509ba..958fd13 100644
+--- a/librecomp/src/pi.cpp
++++ b/librecomp/src/pi.cpp
+@@ -227,7 +227,8 @@ void read_save_file() {
+     std::filesystem::path save_file_path = ultramodern::get_save_file_path();
+ 
+     // Ensure the save file directory exists.
+-    std::filesystem::create_directories(save_file_path.parent_path());
++    std::error_code save_dir_ec;
++    std::filesystem::create_directories(save_file_path.parent_path(), save_dir_ec);
+ 
+     // Read the save file if it exists.
+     std::ifstream save_file = recomp::open_input_file_with_backup(save_file_path, std::ios_base::binary);
+diff --git a/librecomp/src/recomp.cpp b/librecomp/src/recomp.cpp
+index ea17675..3f1a83c 100644
+--- a/librecomp/src/recomp.cpp
++++ b/librecomp/src/recomp.cpp
+@@ -28,7 +28,7 @@
+ #ifdef _WIN32
+ #    define WIN32_LEAN_AND_MEAN
+ #    include <Windows.h>
+-#else
++#elif !defined(__SWITCH__)
+ #    include <sys/mman.h>
+ #endif
+ 
+@@ -84,8 +84,9 @@ bool recomp::register_game(const recomp::GameEntry& entry) {
+ 
+ void recomp::mods::initialize_mods() {
+     N64Recomp::live_recompiler_init();
+-    std::filesystem::create_directories(config_path / mods_directory);
+-    std::filesystem::create_directories(config_path / mod_config_directory);
++    std::error_code mods_dir_ec;
++    std::filesystem::create_directories(config_path / mods_directory, mods_dir_ec);
++    std::filesystem::create_directories(config_path / mod_config_directory, mods_dir_ec);
+     mod_context->set_mods_config_path(config_path / "mods.json");
+     mod_context->set_mod_config_directory(config_path / mod_config_directory);
+ }
+@@ -187,7 +188,8 @@ bool check_stored_rom(const recomp::GameEntry& game_entry) {
+ 
+     if (!check_hash(stored_rom_data, game_entry.rom_hash)) {
+         // Incorrect hash, remove the stored ROM file if it exists.
+-        std::filesystem::remove(config_path / game_entry.stored_filename());
++        std::error_code remove_ec;
++        std::filesystem::remove(config_path / game_entry.stored_filename(), remove_ec);
+         return false;
+     }
+ 
+@@ -219,7 +221,8 @@ bool recomp::load_stored_rom(std::u8string& game_id) {
+ 
+     if (!check_hash(stored_rom_data, find_it->second.rom_hash)) {
+         // The ROM no longer has the right hash, delete it.
+-        std::filesystem::remove(config_path / find_it->second.stored_filename());
++        std::error_code remove_ec;
++        std::filesystem::remove(config_path / find_it->second.stored_filename(), remove_ec);
+         return false;
+     }
+ 
+@@ -780,6 +783,10 @@ void recomp::start(const recomp::Configuration& cfg) {
+             VirtualFree(rdram, 0, MEM_RELEASE);
+         }
+     }
++#elif defined(__SWITCH__)
++    // Horizon has no mmap to reserve the full 4GB with guard pages, so only the usable memory is allocated.
++    rdram = static_cast<uint8_t*>(std::calloc(mem_size, 1));
++    alloc_failed = (rdram == nullptr);
+ #else
+     rdram = (uint8_t*)mmap(NULL, allocation_size, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
+     alloc_failed = rdram == reinterpret_cast<uint8_t*>(MAP_FAILED);
+@@ -835,7 +842,12 @@ void recomp::start(const recomp::Configuration& cfg) {
+     free_failed = (VirtualFree(rdram, 0, MEM_RELEASE) == 0);
+ #else
+     // munmap returns -1 on failure.
++#if defined(__SWITCH__)
++    std::free(rdram);
++    free_failed = false;
++#else
+     free_failed = (munmap(rdram, allocation_size) == -1);
++#endif
+ #endif
+ 
+     if (free_failed) {
+diff --git a/thirdparty/concurrentqueue/lightweightsemaphore.h b/thirdparty/concurrentqueue/lightweightsemaphore.h
+index 41ba094..de70f66 100644
+--- a/thirdparty/concurrentqueue/lightweightsemaphore.h
++++ b/thirdparty/concurrentqueue/lightweightsemaphore.h
+@@ -24,6 +24,11 @@ extern "C" {
+ }
+ #elif defined(__MACH__)
+ #include <mach/mach.h>
++#elif defined(__SWITCH__)
++#include <cassert>
++#include <chrono>
++#include <condition_variable>
++#include <mutex>
+ #elif defined(__unix__)
+ #include <semaphore.h>
+ 
+@@ -253,6 +258,72 @@ public:
+ 		}
+ 	}
+ };
++#elif defined(__SWITCH__)
++//---------------------------------------------------------
++// Semaphore (Nintendo Switch: libnx has no timed semaphore wait, so build one from a condition variable)
++//---------------------------------------------------------
++class Semaphore
++{
++private:
++	std::mutex m_mutex;
++	std::condition_variable m_cv;
++	int m_count;
++
++	Semaphore(const Semaphore& other) MOODYCAMEL_DELETE_FUNCTION;
++	Semaphore& operator=(const Semaphore& other) MOODYCAMEL_DELETE_FUNCTION;
++
++public:
++	Semaphore(int initialCount = 0) : m_count(initialCount)
++	{
++		assert(initialCount >= 0);
++	}
++
++	bool wait()
++	{
++		std::unique_lock<std::mutex> lock(m_mutex);
++		m_cv.wait(lock, [this] { return m_count > 0; });
++		--m_count;
++		return true;
++	}
++
++	bool try_wait()
++	{
++		std::lock_guard<std::mutex> lock(m_mutex);
++		if (m_count > 0) {
++			--m_count;
++			return true;
++		}
++		return false;
++	}
++
++	bool timed_wait(std::uint64_t usecs)
++	{
++		std::unique_lock<std::mutex> lock(m_mutex);
++		if (!m_cv.wait_for(lock, std::chrono::microseconds(usecs), [this] { return m_count > 0; })) {
++			return false;
++		}
++		--m_count;
++		return true;
++	}
++
++	void signal()
++	{
++		signal(1);
++	}
++
++	void signal(int count)
++	{
++		{
++			std::lock_guard<std::mutex> lock(m_mutex);
++			m_count += count;
++		}
++		if (count == 1) {
++			m_cv.notify_one();
++		} else {
++			m_cv.notify_all();
++		}
++	}
++};
+ #else
+ #error Unsupported platform! (No semaphore wrapper available)
+ #endif
+diff --git a/ultramodern/include/ultramodern/renderer_context.hpp b/ultramodern/include/ultramodern/renderer_context.hpp
+index 43032ea..bf2df87 100644
+--- a/ultramodern/include/ultramodern/renderer_context.hpp
++++ b/ultramodern/include/ultramodern/renderer_context.hpp
+@@ -54,7 +54,7 @@ namespace ultramodern {
+             auto operator<=>(const WindowHandle&) const = default;
+         };
+ // TODO add a native window handle option here (Display/Window for x11 and ANativeWindow for Android) as a compile-time option.
+-#elif defined(__linux__) || defined(__ANDROID__)
++#elif defined(__linux__) || defined(__ANDROID__) || defined(__SWITCH__)
+         using WindowHandle = SDL_Window*;
+ #elif defined(__APPLE__)
+         struct WindowHandle {
+diff --git a/ultramodern/src/error_handling.cpp b/ultramodern/src/error_handling.cpp
+index 8ca779e..f415d72 100644
+--- a/ultramodern/src/error_handling.cpp
++++ b/ultramodern/src/error_handling.cpp
+@@ -21,7 +21,7 @@ void ultramodern::error_handling::message_box(const char* msg) {
+ void ultramodern::error_handling::quick_exit(const char* filename, int line, const char *func, int exit_status) {
+     fprintf(stderr, "Exiting with exit status '%i'. Function %s, at file %s:%i\n", exit_status, func, filename, line);
+ 
+-#ifdef __APPLE__
++#if defined(__APPLE__) || defined(__SWITCH__)
+     std::_Exit(exit_status);
+ #else
+     std::quick_exit(exit_status);
+diff --git a/ultramodern/src/threads.cpp b/ultramodern/src/threads.cpp
+index 812c556..5b906eb 100644
+--- a/ultramodern/src/threads.cpp
++++ b/ultramodern/src/threads.cpp
+@@ -144,6 +144,35 @@ void ultramodern::set_native_thread_name(const std::string& name) {
+ }
+ 
+ void ultramodern::set_native_thread_priority(ThreadPriority pri) {}
++#elif defined(__SWITCH__)
++#include <switch.h>
++
++// Horizon has no thread names, but threads are otherwise created on the process' default core, so use the name
++// to spread the busiest threads over the three cores an application can use.
++void ultramodern::set_native_thread_name(const std::string& name) {
++    int core;
++    if (name == "Gfx Thread") {
++        core = 1;
++    } else if (name == "SP Task Thread" || name == "VI Thread") {
++        core = 2;
++    } else {
++        core = 0;
++    }
++    svcSetThreadCoreMask(CUR_THREAD_HANDLE, core, 1u << core);
++}
++
++void ultramodern::set_native_thread_priority(ThreadPriority pri) {
++    // Horizon priorities go from 0 (highest) to 63; applications normally run at 0x2C.
++    int priority;
++    switch (pri) {
++        case ThreadPriority::Low:      priority = 0x2D; break;
++        case ThreadPriority::High:     priority = 0x2B; break;
++        case ThreadPriority::VeryHigh: priority = 0x2A; break;
++        case ThreadPriority::Critical: priority = 0x29; break;
++        default:                       priority = 0x2C; break;
++    }
++    svcSetThreadPriority(CUR_THREAD_HANDLE, priority);
++}
+ #endif
+ 
+ void wait_for_resumed(RDRAM_ARG UltraThreadContext* thread_context) {
+diff --git a/ultramodern/src/timer.cpp b/ultramodern/src/timer.cpp
+index ee26c45..cdae6c5 100644
+--- a/ultramodern/src/timer.cpp
++++ b/ultramodern/src/timer.cpp
+@@ -142,7 +142,13 @@ void timer_thread(RDRAM_ARG1) {
+ 
+ void ultramodern::init_timers(RDRAM_ARG1) {
+     timer_context.thread = std::thread{ timer_thread, PASS_RDRAM1 };
++#ifdef __SWITCH__
++    // libnx has no thread detach (pthread_detach fails, so std::thread::detach throws). Move the thread into an
++    // object that's never destroyed instead, so it isn't joinable when static destructors run at exit.
++    new std::thread(std::move(timer_context.thread));
++#else
+     timer_context.thread.detach();
++#endif
+ }
+ 
+ uint32_t ultramodern::get_speed_multiplier() {

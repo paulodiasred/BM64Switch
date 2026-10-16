@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Bomberman 64: Recompiled
-Exec=/app/bin/BM64Recompiled
-Type=Application
-Icon=io.github.bm64recomp.bm64recomp
-Categories=Game;
-Comment=Static recompilation of Bomberman 64 for PC.
-MimeType=x-scheme-handler/bm64recomp
