@@ -29,31 +29,33 @@ jogar.**
 
 ## Instalação no Switch
 
-1. Copie `BM64Recompiled.nro` para `sdmc:/switch/` no cartão SD. É o único arquivo do jogo: shaders e o banco de
-   controles vão embutidos nele.
-2. Coloque a sua ROM do Bomberman 64 (USA) em um destes lugares:
-   - `sdmc:/switch/bm64recomp/` (pasta criada pelo jogo na primeira execução),
-   - `sdmc:/switch/`,
-   - a raiz do cartão (`sdmc:/`).
+Você precisa de um Switch com Atmosphère e da **sua própria** ROM do **Bomberman 64 (USA)**. Baixe o jogo na
+**[página de Releases](https://github.com/paulodiasred/BM64Switch/releases)**. Há dois jeitos de instalar:
 
-   Qualquer formato serve (`.z64`, `.n64` ou `.v64`), com qualquer nome.
+### Opção 1: NSP (recomendado), com ícone na tela inicial
+
+1. Instale o `BM64Recompiled.nsp` com um instalador de títulos (DBI, Tinfoil, Goldleaf...). Instalar NSP exige
+   sigpatches no Atmosphère.
+2. Coloque a ROM no cartão SD (veja [Onde colocar a ROM](#onde-colocar-a-rom)).
+3. Abra **Bomberman 64: Recompiled** pela tela inicial (HOME), como qualquer jogo.
+
+### Opção 2: NRO (sem instalar)
+
+1. Copie `BM64Recompiled.nro` para `sdmc:/switch/` no cartão SD.
+2. Coloque a ROM no cartão SD (veja abaixo).
 3. Abra pelo Homebrew Menu em **modo title override**: segure **R** ao abrir um jogo qualquer. Pelo Álbum (modo
    applet) não há memória suficiente.
 
-Na primeira execução a ROM é validada e copiada para `sdmc:/switch/bm64recomp/`, onde também ficam configurações,
-saves, o cache de shaders e os logs (`bm64.log`, `bm64-err.log`).
+### Onde colocar a ROM
 
-### Opcional: instalar como NSP (ícone na tela inicial)
+Qualquer um destes lugares serve:
+- `sdmc:/switch/bm64recomp/` (pasta criada pelo jogo na primeira execução),
+- `sdmc:/switch/`,
+- a raiz do cartão (`sdmc:/`).
 
-O jogo também pode ser instalado como um título normal. Assim ele aparece na tela inicial (HOME), abre direto com a
-memória completa (sem segurar R) e não precisa do `.nro`.
-
-1. Gere `dist\BM64Recompiled.nsp` com `.\build.ps1 nsp C:\caminho\prod.keys`. É preciso o `prod.keys` do **seu**
-   console, extraído com o Lockpick_RCM. As chaves ficam no seu PC: só a etapa de empacotamento as lê, num container
-   sem acesso à rede, e elas nunca vão para o repositório.
-2. Instale com um instalador de títulos (DBI, Tinfoil, Goldleaf...). Instalar NSP exige sigpatches no Atmosphère.
-3. A ROM fica nos mesmos lugares de antes. Configurações e saves são os mesmos do `.nro`
-   (`sdmc:/switch/bm64recomp/`).
+Vale qualquer formato (`.z64`, `.n64` ou `.v64`) e qualquer nome de arquivo. Na primeira execução a ROM é validada e
+copiada para `sdmc:/switch/bm64recomp/`, então depois você pode apagar a original. Nessa pasta também ficam as
+configurações, os saves, o cache de shaders e os logs (`bm64.log`, `bm64-err.log`). O NSP e o NRO usam a mesma pasta.
 
 **Menu de configurações:** aperte **−** (Minus) para abrir ou fechar. Ele tem as abas:
 - **Graphics:** resolução interna, anti-aliasing, filtro de textura, VSync, FPS e o clock da CPU do Switch.
@@ -77,6 +79,8 @@ cd BM64Switch
 | `.\build.ps1 generate C:\caminho\bomberman64.z64` | Uma vez: descomprime a ROM, recompila o jogo (`RecompiledFuncs/`), o microcódigo de áudio (`rsp/aspMain.cpp`) e os patches (`RecompiledPatches/`). |
 | `.\build.ps1 switch` | Gera `dist\BM64Recompiled.nro` (e o `.elf`, para ler crash reports). |
 | `.\build.ps1 all C:\caminho\bomberman64.z64` | `generate` + `switch`. |
+| `.\build.ps1 nsp C:\caminho\prod.keys` | Gera `dist\BM64Recompiled.nsp`. Precisa do `prod.keys` do seu console (Lockpick_RCM). Só a etapa de empacotamento as lê, usando apenas as duas chaves necessárias, num container sem rede, e elas nunca vão para o repositório. |
+| `.\build.ps1 override <ID do título>` | Sem chaves: pasta LayeredFS do Atmosphère em `dist\sd` que roda o jogo no lugar de um título instalado, para testar o build do NSP. |
 | `.\build.ps1 patches` | Recompila só os patches, depois de editar `patches\*.c`. |
 | `.\build.ps1 linux` | Build de teste para Linux (mesmo código e renderer), em `build-linux\`. |
 | `.\build.ps1 test run.sh SHOTS="10 20 30"` | Build Linux + execução headless de um script de `tools\test\`, que tira screenshots em `run\`. A ROM precisa estar em `run\`. |
@@ -126,7 +130,7 @@ Nada gerado a partir da ROM pode ir para o git: o `.gitignore` já cobre ROMs, `
 ## Limitações conhecidas
 
 - Mods de código não funcionam: homebrew não pode criar memória executável.
-- O modo applet (Álbum) não tem memória suficiente. Use o title override.
+- O NRO no modo applet (Álbum) não tem memória suficiente. Use o NSP ou o title override.
 - O primeiro uso de cada efeito ainda pode dar uma travadinha, enquanto o shader compila. Os shaders ficam salvos em
   `shaders.bin` e são pré-compilados nas execuções seguintes.
 
