@@ -7,6 +7,7 @@
     .\build.ps1 switch                             # dist\BM64Recompiled.nro
     .\build.ps1 all C:\roms\bomberman64.z64        # generate + switch
     .\build.ps1 nsp C:\keys\prod.keys              # dist\BM64Recompiled.nsp (installable, icon on HOME)
+    .\build.ps1 override 0100000000010000          # dist\sd: runs the game in place of an installed one (no keys)
     .\build.ps1 patches                            # after editing patches\*.c
     .\build.ps1 linux                              # Linux test build (build-linux\)
     .\build.ps1 test run.sh                        # runs a tools\test script headless (needs the ROM in run\)
@@ -14,7 +15,7 @@
 #>
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('generate', 'patches', 'switch', 'nsp', 'linux', 'test', 'all', 'shell', 'clean')]
+    [ValidateSet('generate', 'patches', 'switch', 'nsp', 'override', 'linux', 'test', 'all', 'shell', 'clean')]
     [string]$Command = 'switch',
 
     [Parameter(Position = 1, ValueFromRemainingArguments = $true)]
@@ -72,6 +73,12 @@ switch ($Command) {
         Invoke-Container $HostImage 'bash tools/generate.sh patches'
     }
     'switch' { Invoke-SwitchBuild }
+    'override' {
+        if (-not $Rest[0]) { throw 'Usage: .\build.ps1 override <title ID of an installed game, e.g. 0100000000010000>' }
+        Invoke-SwitchBuild
+        Invoke-Container $SwitchImage "bash tools/build-nsp.sh override '$($Rest[0])'"
+        Write-Host "Done: copy the 'atmosphere' folder inside $(Join-Path $Root 'dist\sd') to the root of the SD card."
+    }
     'nsp' {
         $Keys = $Rest[0]
         if (-not $Keys) { $Keys = Join-Path $HOME '.switch\prod.keys' }

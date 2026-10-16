@@ -4,6 +4,10 @@
 #   fetch  (host image, network)     downloads hacBrewPack at a pinned commit and builds it
 #   stage  (Switch image)            main NSO, npdm, NACP and icon from the Switch build
 #   pack   (host image, NO network)  hacBrewPack with the console keys mounted read-only at /keys/prod.keys
+#
+# build.ps1 override <title ID> runs only "override <title ID>" (Switch image): no keys needed. It makes an
+# Atmosphere LayeredFS folder that runs the game in place of an installed title, to test the NSP build without
+# packing it.
 set -e
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -35,6 +39,28 @@ stage)
     cp icons/nx-icon.jpg "$STAGE/control/icon_AmericanEnglish.dat"
     cp -r build-switch/romfs "$STAGE/romfs"
     ;;
+override)
+    HOST_ID=$(echo "$2" | tr 'a-f' 'A-F')
+    if ! [[ "$HOST_ID" =~ ^01[0-9A-F]{14}$ ]]; then
+        echo "Usage: build-nsp.sh override <16-digit title ID of an installed game>" >&2
+        exit 1
+    fi
+    export PATH="$PATH:$DEVKITPRO/tools/bin"
+    OUT="dist/sd/atmosphere/contents/$HOST_ID"
+    rm -rf dist/sd
+    mkdir -p "$OUT/exefs"
+    elf2nso build-switch/BM64Recompiled.elf "$OUT/exefs/main"
+    # Hide the replaced game's other modules (its rtld would otherwise be the entry point).
+    for module in rtld sdk subsdk0 subsdk1 subsdk2 subsdk3 subsdk4 subsdk5 subsdk6 subsdk7 subsdk8 subsdk9; do
+        touch "$OUT/exefs/$module.stub"
+    done
+    # The npdm must carry the title ID of the game it replaces.
+    sed "s/0x$TITLE_ID/0x$HOST_ID/g" tools/nsp/bm64.npdm.json > "$STAGE-override.json"
+    npdmtool "$STAGE-override.json" "$OUT/exefs/main.npdm" 2> /dev/null
+    rm "$STAGE-override.json"
+    cp -r build-switch/romfs "$OUT/romfs"
+    echo "== dist/sd: copy its atmosphere folder to the root of the SD card"
+    ;;
 pack)
     if [ ! -f /keys/prod.keys ]; then
         echo "prod.keys not mounted" >&2
@@ -52,7 +78,7 @@ pack)
     echo "== dist/BM64Recompiled.nsp"
     ;;
 *)
-    echo "Usage: build-nsp.sh fetch|stage|pack" >&2
+    echo "Usage: build-nsp.sh fetch|stage|pack|override <title ID>" >&2
     exit 1
     ;;
 esac
