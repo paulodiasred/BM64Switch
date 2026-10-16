@@ -1,75 +1,38 @@
-# VSCode file settings
-.vscode/settings.json
-# .vscode/c_cpp_properties.json
-.vscode/launch.json
-
-# Input elf and rom files
-*.elf
+# ROMs: never commit them
 *.z64
-*.map
+*.n64
+*.v64
 
-# Output C files
+# Everything generated from the ROM (tools/generate.sh)
 RecompiledFuncs/
 RecompiledPatches/
+rsp/
+patches/*.o
+patches/*.d
+patches/*.elf
+patches/*.bin
+patches/*.map
+*.map
 
-# Linux build output
-build/
-*.o
+# Build output
+build-tools/
+build-linux/
+build-switch/
+dist/
+*.elf
+*.nro
+*.nacp
 
-# Windows build output
-*.exe
-*.dll
-*.lib
-*.pdb
+# Headless test runs (tools/test)
+run/
+run-*/
 
-# Data dumps
-data_dump.toml
-dump.toml
+# Recompiler binaries copied to the root
+/N64Recomp
+/RSPRecomp
 
-# Local backups
-backups
-
-# User-specific files
-*.rsuser
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-bld/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
-out/
-
-# Visual Studio 2015/2017 cache/options directory
+# Editors
+.vscode/
 .vs/
-vcpkg_installed/
-
-# Runtime files
-imgui.ini
-rt64.log
-
-node_modules/
-
-# Recompiler Linux binary
-N64Recomp
-RSPRecomp
 .DS_Store
-
-# Controller mappings file
-gamecontrollerdb.txt
-
-# RSP Microcode recompiled output
-aspMain.cpp
+imgui.ini

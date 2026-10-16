@@ -1,0 +1,5 @@
+# Shell scripts run inside Linux containers and must keep LF line endings.
+*.sh text eol=lf
+*.Dockerfile text eol=lf
+# Patches for the submodules are applied with git apply and must keep LF line endings.
+*.patch text eol=lf
