@@ -57,12 +57,16 @@ namespace bm64lus {
         // Debugging aid: when non-zero, every Nth frame's raw display list is written to dl_<frame>.txt
         // (set from the BM64_DL_DUMP environment variable).
         uint32_t dump_interval = 0;
+        // Debugging aid: when set, every new texture is written to texdump/ as a grayscale image
+        // (BM64_TEX_DUMP=1; the folder must exist).
+        bool texture_dump = false;
 
     private:
         struct PendingTextureImage {
             bool active = false;
             size_t cmd_index = 0;
             uint32_t phys = 0;
+            uint32_t fmt = 0;
             uint32_t siz = 0;
             uint32_t width = 0;
             uint32_t needed_bytes = 0;
@@ -145,6 +149,8 @@ namespace bm64lus {
         // Returns the number of extra 64-bit words an extended (RT64) command occupies.
         uint32_t translate_extended(uint32_t w0, uint32_t w1, uint32_t pc);
         void evict_old_textures();
+        void dump_texture(const uint8_t* data, uint32_t size);
+        uint32_t texture_dump_count = 0;
     };
 }
 

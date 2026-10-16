@@ -472,7 +472,46 @@ namespace bm64lus {
             cmds[pending_timg.cmd_index].w1 = host_ptr(pending_timg.phys);
             return;
         }
-        cmds[pending_timg.cmd_index].w1 = reinterpret_cast<uintptr_t>(stage_texture(pending_timg.phys, size));
+        uint32_t new_before = stats.textures_new;
+        const uint8_t* staged = stage_texture(pending_timg.phys, size);
+        cmds[pending_timg.cmd_index].w1 = reinterpret_cast<uintptr_t>(staged);
+        if (texture_dump && stats.textures_new != new_before) {
+            dump_texture(staged, size);
+        }
+    }
+
+    void DisplayListTranslator::dump_texture(const uint8_t* data, uint32_t size) {
+        // Grayscale preview, good enough to recognize what a texture shows (palettes are ignored).
+        uint32_t bits = 4u << pending_timg.siz;
+        uint32_t width = pending_timg.width;
+        uint32_t height = width == 0 ? 0 : size * 8 / bits / width;
+        if (width == 0 || height == 0 || width > 1024 || height > 1024) {
+            return;
+        }
+        char name[96];
+        snprintf(name, sizeof(name), "texdump/tex%05u_%ux%u_f%us%u.pgm", texture_dump_count++, width, height,
+                 pending_timg.fmt, pending_timg.siz);
+        FILE* f = fopen(name, "wb");
+        if (f == nullptr) {
+            return;
+        }
+        fprintf(f, "P5\n%u %u\n255\n", width, height);
+        for (uint32_t i = 0; i < width * height; i++) {
+            uint32_t bit = i * bits;
+            uint8_t v = 0;
+            switch (bits) {
+                case 4: v = ((data[bit / 8] >> ((bit % 8) ? 0 : 4)) & 0xF) * 17; break;
+                case 8: v = data[bit / 8]; break;
+                case 16: {
+                    uint16_t px = (data[bit / 8] << 8) | data[bit / 8 + 1];
+                    v = pending_timg.fmt == 3 ? (px >> 8) : static_cast<uint8_t>((((px >> 11) & 31) + ((px >> 6) & 31) + ((px >> 1) & 31)) * 255 / 93);
+                    break;
+                }
+                case 32: v = data[bit / 8]; break;
+            }
+            fputc(v, f);
+        }
+        fclose(f);
     }
 
     uint32_t DisplayListTranslator::translate_extended(uint32_t w0, uint32_t w1, uint32_t pc) {
@@ -725,6 +764,7 @@ namespace bm64lus {
                     pending_timg.cmd_index = cmds.size();
                     pending_timg.phys = phys;
                     pending_timg.siz = (w0 >> 19) & 0x3;
+                    pending_timg.fmt = (w0 >> 21) & 0x7;
                     pending_timg.width = (w0 & 0xFFF) + 1;
                     pending_timg.needed_bytes = 0;
                     emit(w0, host_ptr(phys));

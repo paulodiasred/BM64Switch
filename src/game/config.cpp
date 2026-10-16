@@ -4,6 +4,7 @@
 #include "zelda_render.h"
 #include "zelda_support.h"
 #include "zelda_cheats.h"
+#include "bm64_translation.h"
 #include "ultramodern/config.hpp"
 #include "librecomp/files.hpp"
 #include <filesystem>
@@ -215,6 +216,7 @@ bool save_general_config(const std::filesystem::path& path) {
     config_json["invert_y_axis_mode"] = zelda64::get_invert_y_axis_mode();
     config_json["analog_camera_invert_mode"] = zelda64::get_analog_camera_invert_mode();
     config_json["debug_mode"] = zelda64::get_debug_mode_enabled();
+    config_json["language"] = static_cast<int>(bm64text::get_language());
 
     return save_json_with_backups(path, config_json);
 }
@@ -231,6 +233,7 @@ void set_general_settings_from_json(const nlohmann::json& config_json) {
     zelda64::set_invert_y_axis_mode(from_or_default(config_json, "invert_y_axis_mode", zelda64::AimInvertMode::On));
     zelda64::set_analog_camera_invert_mode(from_or_default(config_json, "analog_camera_invert_mode", zelda64::AimInvertMode::On));
     zelda64::set_debug_mode_enabled(from_or_default(config_json, "debug_mode", false));
+    bm64text::set_language(static_cast<bm64text::Language>(from_or_default(config_json, "language", 0)));
 }
 
 bool load_general_config(const std::filesystem::path& path) {

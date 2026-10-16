@@ -1,0 +1,782 @@
+# Bomberman 64: Recompiled - tradução para português do Brasil
+#
+# Formato: cada texto do jogo em inglês ("en:") seguido da tradução ("pt:").
+# - "\n" quebra a linha, como no texto original.
+# - Letras aceitas: A-Z a-z 0-9, espaço, ! ? . - / e as acentuadas á à â ã é ê í ó ô õ ú ü ç (e maiúsculas).
+#   A fonte do jogo não tem vírgula, dois-pontos nem apóstrofo.
+# - O "en:" precisa ser idêntico ao texto do jogo, inclusive espaços.
+# - Textos sem tradução aparecem em inglês (nomes nos créditos ficam como estão).
+
+en: Adventure
+pt: Aventura
+
+en:    Battle
+pt:    Batalha
+
+en:   Custom
+pt:  Customizar
+
+en:   Options
+pt:    Opções
+
+en: Select File
+pt: Escolha o Arquivo
+
+en: New
+pt: Novo
+
+en: Erase File
+pt: Apagar Arquivo
+
+en: Play Time
+pt: Tempo de Jogo
+
+en: START
+pt: INÍCIO
+
+en: Untouchable Treasure
+pt: Tesouro Intocável
+
+en: Target Time           
+pt: Tempo Alvo            
+
+en: READY
+pt: PREPARAR
+
+en: GO!
+pt: JÁ!
+
+en: Friend or Foe?
+pt: Amigo ou Inimigo?
+
+en: To Have or Have Not
+pt: Ter ou Não Ter
+
+en: Winged Guardian
+pt: Guardião Alado
+
+en: Switches and Bridges
+pt: Botões e Pontes
+
+en: Pump it Up!
+pt: Bombeando!
+
+en: Sewer Savage
+pt: Fera do Esgoto
+
+en: Hot on the Trail
+pt: Pista Quente
+
+en: On the Right Track
+pt: No Caminho Certo
+
+en: Hot Avenger
+pt: Vingador Ardente
+
+en: Blizzard Peaks
+pt: Picos Nevados
+
+en: Shiny Slippy Icy Floor
+pt: Chão de Gelo Escorregadio
+
+en: Cold Killers
+pt: Assassinos Gelados
+
+en: Go for Broke
+pt: Tudo ou Nada
+
+en: High-Tech Harvester
+pt: Ceifadora Tecnológica
+
+en: Trap Tower
+pt: Torre das Armadilhas
+
+en: Beyond the Clouds...
+pt: Além das Nuvens...
+
+en: Spellmaker
+pt: Feiticeiro
+
+en: Doom Castle
+pt: Castelo da Perdição
+
+en: Final Battle!
+pt: Batalha Final!
+
+en: Stage Cleared
+pt: Fase Concluída
+
+en: Time              
+pt: Tempo             
+
+en: Enemies Defeated        
+pt: Inimigos Derrotados     
+
+en: Gold Cards            
+pt: Cartas de Ouro        
+
+en: CLEAR BONUS
+pt: BÔNUS
+
+en: RANK
+pt: NOTA
+
+en: Game Over
+pt: Fim de Jogo
+
+en: Continue
+pt: Continuar
+
+en: YES
+pt: SIM
+
+en: NO
+pt: NÃO
+
+en: Pause
+pt: Pausa
+
+en: Return to Game
+pt: Voltar ao Jogo
+
+en: Exit
+pt: Sair
+
+en: Credits
+pt: Créditos
+
+en: Attack Level          
+pt: Nível de Ataque       
+
+en: Saving Data...
+pt: Salvando Dados...
+
+en: Data Save Failure
+pt: Falha ao Salvar
+
+en: ALL STAFF
+pt: EQUIPE
+
+en: CAST
+pt: ELENCO
+
+en: DIRECTION
+pt: DIREÇÃO
+
+en: Director
+pt: Diretor
+
+en: Assistant Director
+pt: Diretor Assistente
+
+en: GAME PLAN
+pt: PLANEJAMENTO
+
+en: Game Design
+pt: Game Design
+
+en: PROGRAM
+pt: PROGRAMAÇÃO
+
+en: System Program
+pt: Programação de Sistema
+
+en: Main Program
+pt: Programação Principal
+
+en: Programmers
+pt: Programadores
+
+en: Design Director
+pt: Diretor de Design
+
+en: Map Design Chief
+pt: Chefe de Design de Mapas
+
+en: Character Design
+pt: Design de Personagens
+
+en: Menu Visual Design
+pt: Design Visual dos Menus
+
+en: World Map Design
+pt: Design do Mapa-Múndi
+
+en: Battle Map Design
+pt: Design dos Mapas de Batalha
+
+en: Enemy Design
+pt: Design de Inimigos
+
+en: SOUND
+pt: SOM
+
+en: Music Compose
+pt: Composição Musical
+
+en: Manipulate Chief
+pt: Chefe de Manipulação
+
+en: Operate-Arrange
+pt: Operação e Arranjos
+
+en: Management
+pt: Gerência
+
+en: Sound Director
+pt: Diretor de Som
+
+en: Sound Effect
+pt: Efeitos Sonoros
+
+en: Sound Program
+pt: Programação de Som
+
+en: OFFICIAL DESIGN
+pt: DESIGN OFICIAL
+
+en: CG Design Chief
+pt: Chefe de Design CG
+
+en: Assistant
+pt: Assistente
+
+en: SUPPORT
+pt: SUPORTE
+
+en: Coordinators
+pt: Coordenadores
+
+en: Mastering
+pt: Masterização
+
+en: Technical Support
+pt: Suporte Técnico
+
+en: COOPERATION
+pt: COLABORAÇÃO
+
+en: SPECIAL THANKS
+pt: AGRADECIMENTOS
+
+en: HUDSON ALL STAFF
+pt: TODA A EQUIPE HUDSON
+
+en: NINTENDO ALL STAFF
+pt: TODA A EQUIPE NINTENDO
+
+en: MANAGEMENT
+pt: GERÊNCIA
+
+en: Product Manager
+pt: Gerente de Produto
+
+en: Producer
+pt: Produtor
+
+en: Executive Producer
+pt: Produtor Executivo
+
+en: Is it OK to Erase
+pt: Deseja mesmo apagar
+
+en: Is this OK?
+pt: Confirma?
+
+en: Yes
+pt: Sim
+
+en: Game Pak Memory?
+pt: a Memória do Cartucho?
+
+en: All Data Will be Erased
+pt: Todos os Dados Serão Apagados
+
+en: Data Erased
+pt: Dados Apagados
+
+en: Data Erased\nfailure
+pt: Falha ao\nApagar Dados
+
+en: Erase Record
+pt: Apagar Registro
+
+en: Erase                  Cancel
+pt: Apagar                 Cancelar
+
+en: No.          Game Data         Pages
+pt: No.          Dados do Jogo     Págs.
+
+en: N64 Controller Pak\nNot Found\n\nInsert N64 Controller Pak\ninto Controller 1
+pt: N64 Controller Pak\nNão Encontrado\n\nInsira o N64 Controller Pak\nno Controle 1
+
+en: New N64 Controller Pak\nfound\n\nIt Will be Used to\nSave Data
+pt: Novo N64 Controller Pak\nencontrado\n\nEle Será Usado para\nSalvar Dados
+
+en: There is a Problem\nwith Controller and/or\nN64 Controller Pak\n\n  A  Reinsert\n  B  Reinitialize
+pt: Há um Problema\nno Controle e/ou no\nN64 Controller Pak\n\n  A  Reinserir\n  B  Reinicializar
+
+en: Record Not Found
+pt: Registro Não Encontrado
+
+en: Controller Not Properly\nInserted\n\nPower OFF and Reinsert\nController
+pt: Controle Não Está\nBem Conectado\n\nDesligue e Reconecte\no Controle
+
+en: Not a N64 Controller Pak\n\nChange to a\nN64 Controller Pak
+pt: Não é um N64 Controller Pak\n\nTroque por um\nN64 Controller Pak
+
+en: N64 Controller Pak Error\n\nFailed to Access the Data
+pt: Erro no N64 Controller Pak\n\nFalha ao Acessar os Dados
+
+en: N64 Controller Pak is\nNot Properly Inserted\n\nExiting the Menu...
+pt: O N64 Controller Pak\nNão Está Bem Inserido\n\nSaindo do Menu...
+
+en: Record has been Erased
+pt: O Registro foi Apagado
+
+en: OFF
+pt: DESL.
+
+en: OPTIONS
+pt: OPÇÕES
+
+en: COMLEVEL
+pt: NÍVEL CPU
+
+en: BATTLE
+pt: BATALHA
+
+en: TIME
+pt: TEMPO
+
+en: NO LIMIT
+pt: SEM LIMITE
+
+en: SUDDEN\n   DEATH
+pt:  MORTE\n  SÚBITA
+
+en: GHOST
+pt: FANTASMA
+
+en: CHARACTER TYPE
+pt: PERSONAGEM
+
+en: CONFIG
+pt: CONFIG.
+
+en: STAGE SELECT
+pt: ESCOLHA A FASE
+
+en: UNLIMITED
+pt: ILIMITADO
+
+en: Congratulations!
+pt: Parabéns!
+
+en: Rock Garden
+pt: Jardim de Pedras
+
+en: Up and Down
+pt: Sobe e Desce
+
+en: Pyramid
+pt: Pirâmide
+
+en: Greedy Trap
+pt: Armadilha Gulosa
+
+en: Top Rules
+pt: No Topo
+
+en: Field of Grass
+pt: Campo Verde
+
+en: In the Gutter
+pt: Na Sarjeta
+
+en: Sea Sick
+pt: Mareado
+
+en: Blizzard Battle
+pt: Batalha na Nevasca
+
+en: Lost at Sea
+pt: Perdidos no Mar
+
+en: Team
+pt: Equipe
+
+en: Could Not Access\n  N64 Controller Pak 1
+pt: Não Foi Possível Acessar\n  o N64 Controller Pak 1
+
+en: Custom
+pt: Customizar
+
+en: Name
+pt: Nome
+
+en: Head
+pt: Cabeça
+
+en: Body
+pt: Corpo
+
+en: Arms
+pt: Braços
+
+en: Legs
+pt: Pernas
+
+en: Data Updated
+pt: Dados Atualizados
+
+en: Save Data?
+pt: Salvar Dados?
+
+en: Saving...
+pt: Salvando...
+
+en: Save Failure
+pt: Falha ao Salvar
+
+en: Remove
+pt: Remover
+
+en: Gold Visor
+pt: Viseira de Ouro
+
+en: Sunglasses
+pt: Óculos Escuros
+
+en: Cat Hood
+pt: Capuz de Gato
+
+en: Dragon Head
+pt: Cabeça de Dragão
+
+en: Ponytails
+pt: Rabo de Cavalo
+
+en: Iron Goggles
+pt: Óculos de Ferro
+
+en: Knight Helmet
+pt: Elmo de Cavaleiro
+
+en: Clown Smile
+pt: Sorriso de Palhaço
+
+en: Chicken Head
+pt: Cabeça de Galinha
+
+en: Samurai Head
+pt: Cabeça de Samurai
+
+en: Gold Armor
+pt: Armadura de Ouro
+
+en: Duck Float
+pt: Boia de Pato
+
+en: Cat Suit
+pt: Roupa de Gato
+
+en: Dragon Mail
+pt: Cota de Dragão
+
+en: Dress
+pt: Vestido
+
+en: Iron Armor
+pt: Armadura de Ferro
+
+en: Knight Armor
+pt: Armadura de Cavaleiro
+
+en: Karate Ware
+pt: Quimono de Caratê
+
+en: Rocking Horse
+pt: Cavalinho de Balanço
+
+en: Shogun Kimono
+pt: Quimono de Xogum
+
+en: Gold Gloves
+pt: Luvas de Ouro
+
+en: Drill Arms
+pt: Braços de Broca
+
+en: Cat Paws
+pt: Patas de Gato
+
+en: Dragon Gloves
+pt: Luvas de Dragão
+
+en: Slash Claws
+pt: Garras Afiadas
+
+en: Iron Nuckles
+pt: Soco de Ferro
+
+en: Knight Sword
+pt: Espada de Cavaleiro
+
+en: Boxing Gloves
+pt: Luvas de Boxe
+
+en: Chicken Wings
+pt: Asas de Galinha
+
+en: Fans
+pt: Leques
+
+en: Gold Boots
+pt: Botas de Ouro
+
+en: Duck Feet
+pt: Pés de Pato
+
+en: Dragon Spikes
+pt: Espinhos de Dragão
+
+en: High Tops
+pt: Tênis de Cano Alto
+
+en: Iron Sneakers
+pt: Tênis de Ferro
+
+en: Knight Shoes
+pt: Botas de Cavaleiro
+
+en: Clogs
+pt: Tamancos
+
+en: Bubby Socks
+pt: Meias Fofas
+
+en: High Heels
+pt: Salto Alto
+
+en: Options
+pt: Opções
+
+en: Sound
+pt: Som
+
+en: Stereo
+pt: Estéreo
+
+en: Mono
+pt: Mono
+
+en: Music
+pt: Música
+
+en: Throw\n  Bombs
+pt: Atirar\n Bombas
+
+en: Control\n     Stick
+pt: Alavanca\nAnalógica
+
+en: B Button
+pt: Botão B
+
+en: View
+pt: Câmera
+
+en: Full\n  Power
+pt: Força\n Total
+
+en: Off
+pt: Desl.
+
+en: Press START to Select
+pt: Aperte START para Escolher
+
+en: Difficulty Level
+pt: Dificuldade
+
+en: Normal
+pt: Normal
+
+en: Hard
+pt: Difícil
+
+en: Erase Which File?
+pt: Apagar Qual Arquivo?
+
+en: No Data Found
+pt: Nenhum Dado Encontrado
+
+en: Are You Sure?
+pt: Tem Certeza?
+
+en:       Copy\nfrom Game Pak
+pt:      Copiar\ndo Cartucho
+
+en: Copy Which Data?
+pt: Copiar Quais Dados?
+
+en: No File 
+pt: Sem Arquivo
+
+en: Insert N64 Controller Pak\ninto Controller 1
+pt: Insira o N64 Controller Pak\nno Controle 1
+
+en: No Record Found
+pt: Nenhum Registro Encontrado
+
+en: N64 Controller Pak Error
+pt: Erro no N64 Controller Pak
+
+en: Data Copied to N64 Controller Pak
+pt: Dados Copiados para o N64 Controller Pak
+
+en: Record Erased
+pt: Registro Apagado
+
+en: There is a Problem with\nController and/or\nN64 Controller Pak\n\n     A  Reinsert\n     B  Reinitialize
+pt: Há um Problema no\nControle e/ou no\nN64 Controller Pak\n\n     A  Reinserir\n     B  Reinicializar
+
+en: Reinitialized
+pt: Reinicializado
+
+en: Reinitialize Failure
+pt: Falha ao Reinicializar
+
+en: New N64 Controller Pak Found
+pt: Novo N64 Controller Pak Encontrado
+
+en: Erase Record?
+pt: Apagar Registro?
+
+en: Copy Data from Game Pak\nIs This OK?
+pt: Copiar Dados do Cartucho\nConfirma?
+
+en: Record Exists\nOK to Overwrite?
+pt: O Registro Já Existe\nSobrescrever?
+
+en: Accessing Data...
+pt: Acessando Dados...
+
+en: Accessing Record...
+pt: Acessando Registro...
+
+en: Could Not Access Record
+pt: Não Foi Possível Acessar o Registro
+
+en: N64 Controller Pak Save Failure
+pt: Falha ao Salvar no N64 Controller Pak
+
+en: N64 Controller Pak\nAccess Failure
+pt: Falha ao Acessar o\nN64 Controller Pak
+
+en: Saving Game Pak Memory...
+pt: Salvando na Memória do Cartucho...
+
+en: Failed to Access\nGame Pak Memory
+pt: Falha ao Acessar a\nMemória do Cartucho
+
+en: Erasing Data...
+pt: Apagando Dados...
+
+en: There is a Game Pak\nMemory Problem\n\nCould Not Access\nGame Pak Memory
+pt: Há um Problema na\nMemória do Cartucho\n\nNão Foi Possível Acessar\na Memória do Cartucho
+
+# Textos com números preenchidos pelo jogo
+
+en: STAGE 1
+pt: FASE 1
+
+en: Page 1
+pt: Pág. 1
+
+en: STAGE 2
+pt: FASE 2
+
+en: Page 2
+pt: Pág. 2
+
+en: STAGE 3
+pt: FASE 3
+
+en: Page 3
+pt: Pág. 3
+
+en: STAGE 4
+pt: FASE 4
+
+en: Page 4
+pt: Pág. 4
+
+en: STAGE 5
+pt: FASE 5
+
+en: Page 5
+pt: Pág. 5
+
+en: STAGE 6
+pt: FASE 6
+
+en: Page 6
+pt: Pág. 6
+
+en: STAGE 7
+pt: FASE 7
+
+en: Page 7
+pt: Pág. 7
+
+en: STAGE 8
+pt: FASE 8
+
+en: Page 8
+pt: Pág. 8
+
+en: STAGE 9
+pt: FASE 9
+
+en: Page 9
+pt: Pág. 9
+
+en: PLAYER 1
+pt: JOGADOR 1
+
+en: FILE 1
+pt: ARQUIVO 1
+
+en: PLAYER 2
+pt: JOGADOR 2
+
+en: FILE 2
+pt: ARQUIVO 2
+
+en: PLAYER 3
+pt: JOGADOR 3
+
+en: FILE 3
+pt: ARQUIVO 3
+
+en: PLAYER 4
+pt: JOGADOR 4
+
+en: FILE 4
+pt: ARQUIVO 4
+
+en: File 1
+pt: Arquivo 1
+
+en: File 2
+pt: Arquivo 2
+
+en: File 3
+pt: Arquivo 3
+
+en: Accessing\n  N64 Controller Pak...
+pt: Acessando o\n  N64 Controller Pak...
+
+en: No Data 
+pt: Sem Dados
+

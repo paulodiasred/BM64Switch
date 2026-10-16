@@ -21,6 +21,7 @@
 #include "zelda_config.h"
 #include "zelda_sound.h"
 #include "zelda_cheats.h"
+#include "bm64_translation.h"
 
 namespace {
     constexpr const char* cvar_menu_open = "gOpenWindows.BM64Settings";
@@ -83,6 +84,10 @@ namespace {
         void DrawElement() override {
             ImGui::TextDisabled("Press Minus (-) or Esc to close. Settings are saved on close.");
             if (ImGui::BeginTabBar("SettingsTabs")) {
+                if (ImGui::BeginTabItem("General")) {
+                    draw_general();
+                    ImGui::EndTabItem();
+                }
                 if (ImGui::BeginTabItem("Graphics")) {
                     draw_graphics();
                     ImGui::EndTabItem();
@@ -177,6 +182,16 @@ namespace {
             if (ImGui::Checkbox("Performance overlay", &overlay)) {
                 cvars()->SetInteger(cvar_perf_overlay, overlay ? 1 : 0);
             }
+        }
+
+        void draw_general() {
+            // Language names in their own language. Text already on screen changes on the next screen.
+            static const char* language_names[] = { "English", "Português (Brasil)" };
+            int language = static_cast<int>(bm64text::get_language());
+            if (ImGui::Combo("Language / Idioma", &language, language_names, IM_ARRAYSIZE(language_names))) {
+                bm64text::set_language(static_cast<bm64text::Language>(language));
+            }
+            ImGui::TextDisabled("Text already on screen changes on the next screen.");
         }
 
         void draw_sound() {

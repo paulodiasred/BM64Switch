@@ -45,7 +45,10 @@ namespace {
 
     class LUSContext final : public ultramodern::renderer::RendererContext {
     public:
-        LUSContext(uint8_t* rdram, bool developer_mode) : translator(rdram) {
+        LUSContext(uint8_t* rdram, bool developer_mode) : rdram(rdram), translator(rdram) {
+            if (const char* dump_frame = getenv("BM64_RDRAM_DUMP")) {
+                rdram_dump_frame = static_cast<uint32_t>(atoi(dump_frame));
+            }
             (void)developer_mode;
             // The ultramodern API enum has no OpenGL entry; Auto stands for "whatever libultraship picked".
             chosen_api = ultramodern::renderer::GraphicsApi::Auto;
@@ -129,6 +132,9 @@ namespace {
                 }
             };
 
+            if (const char* dump = getenv("BM64_TEX_DUMP")) {
+                translator.texture_dump = dump[0] == '1';
+            }
             if (const char* dump = getenv("BM64_DL_DUMP")) {
                 translator.dump_interval = static_cast<uint32_t>(atoi(dump));
             }
@@ -247,6 +253,14 @@ namespace {
                 if (++frames_logged <= 3) {
                     printf("[LUS] frame %u presented\n", frames_logged);
                 }
+                if (frames_logged == rdram_dump_frame) {
+                    // Debugging aid: BM64_RDRAM_DUMP=<frame> saves the game's 8MB of RDRAM (as 32-bit host-endian
+                    // words) to rdram.bin when that frame is presented.
+                    if (FILE* dump = fopen("rdram.bin", "wb")) {
+                        fwrite(rdram, 1, 0x800000, dump);
+                        fclose(dump);
+                    }
+                }
                 frame_presented = true;
                 last_origin = origin;
             } else if (!have_frame && !ultramodern::is_game_started()) {
@@ -315,6 +329,8 @@ namespace {
         uint32_t last_shaders_created = 0;
         uint32_t last_textures_uploaded = 0;
 
+        uint8_t* rdram;
+        uint32_t rdram_dump_frame = 0;
         std::shared_ptr<Ship::Context> context;
         std::shared_ptr<Fast::Fast3dWindow> window;
         bm64lus::DisplayListTranslator translator;

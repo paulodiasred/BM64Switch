@@ -144,6 +144,7 @@ target_sources(BM64Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/game/rom_decompression.cpp
     ${CMAKE_SOURCE_DIR}/src/game/minicoro.cpp
     ${CMAKE_SOURCE_DIR}/src/game/process_coroutines.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/translation.cpp
 
     ${CMAKE_SOURCE_DIR}/src/lus/dl_translator.cpp
     ${CMAKE_SOURCE_DIR}/src/lus/lus_render_context.cpp
@@ -188,9 +189,11 @@ if (BM64_SWITCH)
     set(BM64_ROMFS_DIR ${CMAKE_BINARY_DIR}/romfs)
     file(MAKE_DIRECTORY ${BM64_ROMFS_DIR})
     file(COPY ${CMAKE_SOURCE_DIR}/recompcontrollerdb.txt DESTINATION ${BM64_ROMFS_DIR})
+    file(COPY ${CMAKE_SOURCE_DIR}/translations DESTINATION ${BM64_ROMFS_DIR})
     set(BM64_O2R ${BM64_ROMFS_DIR}/bm64.o2r)
 else()
     file(COPY ${CMAKE_SOURCE_DIR}/recompcontrollerdb.txt DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY ${CMAKE_SOURCE_DIR}/translations DESTINATION ${CMAKE_BINARY_DIR})
     set(BM64_O2R ${CMAKE_BINARY_DIR}/bm64.o2r)
 endif()
 add_custom_command(OUTPUT ${BM64_O2R}

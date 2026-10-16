@@ -5,6 +5,7 @@ BIN=${BIN:-$SRC/build-linux/BM64Recompiled}
 RUN_DIR=${RUN_DIR:-$SRC/run}
 mkdir -p "$RUN_DIR"
 cp -f "$(dirname "$BIN")/bm64.o2r" "$SRC/recompcontrollerdb.txt" "$RUN_DIR"/
+cp -rf "$SRC/translations" "$RUN_DIR"/
 touch "$RUN_DIR/portable.txt"
 cd "$RUN_DIR"
 Xvfb :99 -screen 0 1280x720x24 >/dev/null 2>&1 &

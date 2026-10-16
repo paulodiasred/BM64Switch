@@ -341593,3 +341593,40 @@ value = 0x0C010800 # jr exec_zerojmp_func
 func = "func_802972D0__0x0D01__secure_call"
 vram = 0x800451c0
 value = 0x0C010800 # jr exec_zerojmp_func
+
+# Translation (src/game/translation.cpp): the text functions get the translated copy of their string argument, and
+# accented letters (which the font lacks) load their base letter and get an accent drawn on top.
+[[patches.hook]]
+func = "func_802810A0"
+before_vram = 0x802810A0
+text = "{ extern void bm64_translate_a0(uint8_t*, recomp_context*); bm64_translate_a0(rdram, ctx); }"
+
+[[patches.hook]]
+func = "func_80280814"
+before_vram = 0x80280814
+text = "{ extern void bm64_translate_a1(uint8_t*, recomp_context*); bm64_translate_a1(rdram, ctx); }"
+
+[[patches.hook]]
+func = "func_80280918"
+before_vram = 0x80280918
+text = "{ extern void bm64_translate_a0(uint8_t*, recomp_context*); bm64_translate_a0(rdram, ctx); }"
+
+[[patches.hook]]
+func = "func_80280C08"
+before_vram = 0x80280C08
+text = "{ extern void bm64_translate_a0(uint8_t*, recomp_context*); bm64_translate_a0(rdram, ctx); }"
+
+[[patches.hook]]
+func = "func_80280358"
+before_vram = 0x80280358
+text = "{ extern void bm64_translate_a0(uint8_t*, recomp_context*); bm64_translate_a0(rdram, ctx); }"
+
+[[patches.hook]]
+func = "func_80280358"
+before_vram = 0x80280558
+text = "{ extern void bm64_glyph_load_begin(uint8_t*, recomp_context*); bm64_glyph_load_begin(rdram, ctx); }"
+
+[[patches.hook]]
+func = "func_80280358"
+before_vram = 0x80280560
+text = "{ extern void bm64_glyph_load_end(uint8_t*, recomp_context*); bm64_glyph_load_end(rdram, ctx); }"
