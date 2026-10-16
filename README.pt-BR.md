@@ -5,6 +5,12 @@
 > **Port para Nintendo Switch desenvolvido por [Paulo Dias](https://github.com/paulodiasred).**
 > Se curtiu, deixe uma ⭐ no repositório!
 
+<p align="center">
+  <img src="docs/photos/switch-1.jpg" width="360" alt="Bomberman 64 rodando num Nintendo Switch OLED">
+  <img src="docs/photos/switch-2.jpg" width="360" alt="Modo Adventure do Bomberman 64 num Nintendo Switch OLED">
+  <br><em>Rodando num Nintendo Switch OLED de verdade.</em>
+</p>
+
 Port para Nintendo Switch (homebrew, `.nro`) do [Bomberman 64: Recompiled](https://github.com/RevoSucks/BM64Recomp).
 O código do jogo é recompilado estaticamente da ROM original com o [N64Recomp](https://github.com/N64Recomp/N64Recomp)
 e roda sobre o [N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime). No PC, a renderização é feita pelo
