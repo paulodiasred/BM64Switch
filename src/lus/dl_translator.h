@@ -47,6 +47,13 @@ namespace bm64lus {
         // created before the first frame and never drawn to.
         std::function<int()> create_previous_frame_fb;
 
+        // Running totals for performance measurements.
+        struct Stats {
+            uint32_t textures_staged = 0;
+            uint32_t textures_new = 0;
+            uint64_t texture_bytes_hashed = 0;
+        } stats;
+
         // Debugging aid: when non-zero, every Nth frame's raw display list is written to dl_<frame>.txt
         // (set from the BM64_DL_DUMP environment variable).
         uint32_t dump_interval = 0;

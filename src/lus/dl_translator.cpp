@@ -415,8 +415,11 @@ namespace bm64lus {
         }
 
         uint64_t key = hash_bytes(scratch.data(), size, phys);
+        stats.textures_staged++;
+        stats.texture_bytes_hashed += size;
         auto it = texture_store.find(key);
         if (it == texture_store.end()) {
+            stats.textures_new++;
             StagedTexture tex;
             tex.data.reset(new uint8_t[size]);
             memcpy(tex.data.get(), scratch.data(), size);

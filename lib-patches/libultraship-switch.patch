@@ -1,5 +1,5 @@
 diff --git a/include/fast/interpreter.h b/include/fast/interpreter.h
-index d4b410b8..027924b3 100644
+index d4b410b8..cdf0fb83 100644
 --- a/include/fast/interpreter.h
 +++ b/include/fast/interpreter.h
 @@ -413,6 +413,9 @@ class Interpreter {
@@ -12,22 +12,26 @@ index d4b410b8..027924b3 100644
      void TextureCacheClear();
      bool TextureCacheLookup(int i, const TextureCacheKey& key);
      void TextureCacheDelete(const uint8_t* origAddr);
-@@ -519,6 +522,7 @@ class Interpreter {
+@@ -519,6 +522,10 @@ class Interpreter {
      GfxRenderingAPI* mRapi = nullptr;
  
      uintptr_t mSegmentPointers[MAX_SEGMENT_POINTERS]{};
 +    FILE* mShaderListFile = nullptr;
++    // Running totals for performance measurements.
++    uint32_t mShadersCreated = 0;
++    uint32_t mTexturesUploaded = 0;
  
      bool mFbActive{};
      bool mRendersToFb{}; // game_renders_to_framebuffer;
 diff --git a/src/fast/interpreter.cpp b/src/fast/interpreter.cpp
-index 028c3cc4..67d0814d 100644
+index 028c3cc4..377a102b 100644
 --- a/src/fast/interpreter.cpp
 +++ b/src/fast/interpreter.cpp
-@@ -146,10 +146,34 @@ ShaderProgram* Interpreter::LookupOrCreateShaderProgram(uint64_t id0, uint64_t i
+@@ -146,10 +146,35 @@ ShaderProgram* Interpreter::LookupOrCreateShaderProgram(uint64_t id0, uint64_t i
          mRapi->UnloadShader(mRenderingState.mShaderProgram);
          prg = mRapi->CreateAndLoadNewShader(id0, id1);
          mRenderingState.mShaderProgram = prg;
++        mShadersCreated++;
 +        if (mShaderListFile != nullptr) {
 +            const uint64_t ids[2] = { id0, id1 };
 +            fwrite(ids, sizeof(ids), 1, mShaderListFile);
@@ -59,7 +63,15 @@ index 028c3cc4..67d0814d 100644
  const char* Interpreter::CCMUXtoStr(uint32_t ccmux) {
      static constexpr std::array tbl = {
          "G_CCMUX_COMBINED",
-@@ -4827,7 +4851,13 @@ void Interpreter::Init(class GfxWindowBackend* wapi, class GfxRenderingAPI* rapi
+@@ -498,6 +523,7 @@ bool Interpreter::TextureCacheLookup(int i, const TextureCacheKey& key) {
+     mRapi->SelectTexture(i, texture_id);
+     mRapi->SetSamplerParameters(i, false, 0, 0);
+     *n = node;
++    mTexturesUploaded++;
+     return false;
+ }
+ 
+@@ -4827,7 +4853,13 @@ void Interpreter::Init(class GfxWindowBackend* wapi, class GfxRenderingAPI* rapi
  
      if (mTexUploadBuffer == nullptr) {
          // We cap texture max to 8k, because why would you need more?

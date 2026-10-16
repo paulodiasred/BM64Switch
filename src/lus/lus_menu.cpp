@@ -29,6 +29,7 @@ namespace {
     constexpr const char* cvar_texture_filter = "gTextureFilter";
     constexpr const char* cvar_vsync = "gVsyncEnabled";
     constexpr const char* cvar_switch_perf_mode = "gSwitchPerfMode";
+    constexpr const char* cvar_perf_overlay = "gBM64PerfOverlay";
 
     std::atomic_bool menu_open = false;
 
@@ -172,6 +173,10 @@ namespace {
                 Ship::Switch::ApplyOverclock();
             }
 #endif
+            bool overlay = bm64lus::perf_overlay_enabled();
+            if (ImGui::Checkbox("Performance overlay", &overlay)) {
+                cvars()->SetInteger(cvar_perf_overlay, overlay ? 1 : 0);
+            }
         }
 
         void draw_sound() {
@@ -283,5 +288,21 @@ namespace bm64lus {
 
     bool is_menu_open() {
         return menu_open;
+    }
+
+    bool perf_overlay_enabled() {
+        return cvars()->GetInteger(cvar_perf_overlay, 0) != 0;
+    }
+
+    void draw_perf_overlay(const char* text) {
+        ImGui::SetNextWindowPos(ImVec2(8.0f, 8.0f));
+        ImGui::SetNextWindowBgAlpha(0.6f);
+        constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+                                           ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing |
+                                           ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoSavedSettings;
+        if (ImGui::Begin("##bm64perf", nullptr, flags)) {
+            ImGui::TextUnformatted(text);
+        }
+        ImGui::End();
     }
 }

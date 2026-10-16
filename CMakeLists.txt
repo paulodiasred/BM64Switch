@@ -151,6 +151,7 @@ target_sources(BM64Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/lus/lus_controldeck.cpp
     ${CMAKE_SOURCE_DIR}/src/lus/lus_ui_stubs.cpp
     ${CMAKE_SOURCE_DIR}/src/lus/lus_settings.cpp
+    ${CMAKE_SOURCE_DIR}/src/lus/perf_monitor.cpp
 
     ${CMAKE_SOURCE_DIR}/rsp/aspMain.cpp
 )

@@ -14,6 +14,8 @@
 #include <ship/window/Window.h>
 #include <fast/Fast3dWindow.h>
 #include <fast/interpreter.h>
+#include <ship/window/MouseStateManager.h>
+#include <ship/window/gui/Gui.h>
 #ifdef __SWITCH__
 #include <ship/port/switch/SwitchImpl.h>
 #include <switch.h>
@@ -24,6 +26,7 @@
 #include "zelda_render.h"
 #include "dl_translator.h"
 #include "lus_menu.h"
+#include "perf_monitor.h"
 
 bool sdl_event_filter(void* userdata, SDL_Event* event);
 // Defined in main.cpp.
@@ -206,7 +209,9 @@ namespace {
                 tasks_in_frame = 0;
                 vis_waited = 0;
             }
+            auto start = bm64lus::PerfMonitor::Clock::now();
             translator.translate_task(task->t.data_ptr);
+            frame_perf.translate_ms += std::chrono::duration<double, std::milli>(bm64lus::PerfMonitor::Clock::now() - start).count();
             tasks_in_frame++;
             if (++tasks_logged <= 3) {
                 printf("[LUS] display list %u translated\n", tasks_logged);
@@ -227,6 +232,7 @@ namespace {
                 autostart_game();
             }
 
+            frame_perf.vis++;
             uint32_t origin = ultramodern::renderer::get_vi_regs()->VI_ORIGIN_REG;
             bool have_frame = !frame_presented && translator.has_commands();
             if (have_frame) {
@@ -234,8 +240,7 @@ namespace {
             }
 
             if (have_frame && (origin != last_origin || vis_waited >= max_unpresented_vis)) {
-                static const std::unordered_map<Mtx*, MtxF> no_replacements;
-                window->DrawAndRunGraphicsCommands(reinterpret_cast<Gfx*>(translator.finish_frame()), no_replacements);
+                draw_frame(reinterpret_cast<Gfx*>(translator.finish_frame()));
                 if (++frames_logged <= 3) {
                     printf("[LUS] frame %u presented\n", frames_logged);
                 }
@@ -267,6 +272,46 @@ namespace {
         }
 
     private:
+        // Fast3dWindow::DrawAndRunGraphicsCommands, split up so drawing and presenting are timed separately.
+        void draw_frame(Gfx* commands) {
+            static const std::unordered_map<Mtx*, MtxF> no_replacements;
+            using Clock = bm64lus::PerfMonitor::Clock;
+            auto interpreter = window->GetInterpreterWeak().lock();
+            auto gui = window->GetGui();
+
+            auto start = Clock::now();
+            window->GetMouseStateManager()->StartFrame();
+            gui->StartDraw();
+            interpreter->StartFrame();
+            interpreter->Run(commands, no_replacements);
+            if (bm64lus::perf_overlay_enabled()) {
+                bm64lus::draw_perf_overlay(perf.overlay_text().c_str());
+            }
+            gui->EndDraw();
+            auto drawn = Clock::now();
+            interpreter->EndFrame();
+            auto presented = Clock::now();
+
+            frame_perf.draw_ms = std::chrono::duration<double, std::milli>(drawn - start).count();
+            frame_perf.present_ms = std::chrono::duration<double, std::milli>(presented - drawn).count();
+            frame_perf.shaders_created = interpreter->mShadersCreated - last_shaders_created;
+            frame_perf.textures_uploaded = interpreter->mTexturesUploaded - last_textures_uploaded;
+            frame_perf.textures_staged = translator.stats.textures_staged - last_stats.textures_staged;
+            frame_perf.textures_new = translator.stats.textures_new - last_stats.textures_new;
+            frame_perf.texture_bytes_hashed = translator.stats.texture_bytes_hashed - last_stats.texture_bytes_hashed;
+            last_shaders_created = interpreter->mShadersCreated;
+            last_textures_uploaded = interpreter->mTexturesUploaded;
+            last_stats = translator.stats;
+            perf.record(frame_perf, presented);
+            frame_perf = {};
+        }
+
+        bm64lus::PerfMonitor perf;
+        bm64lus::PerfMonitor::Frame frame_perf;
+        bm64lus::DisplayListTranslator::Stats last_stats;
+        uint32_t last_shaders_created = 0;
+        uint32_t last_textures_uploaded = 0;
+
         std::shared_ptr<Ship::Context> context;
         std::shared_ptr<Fast::Fast3dWindow> window;
         bm64lus::DisplayListTranslator translator;
