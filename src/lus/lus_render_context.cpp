@@ -95,6 +95,7 @@ namespace {
             }
             if (failed_step != nullptr) {
                 printf("[LUS] Failed to initialize libultraship: %s\n", failed_step);
+                fflush(stdout);
                 setup_result = ultramodern::renderer::SetupResult::GraphicsDeviceNotFound;
                 return;
             }
@@ -108,6 +109,7 @@ namespace {
             bool window_ok = context->InitWindow(window);
             if (!window_ok || !context->InitGfxDebugger() || !context->InitEventSystem()) {
                 printf("[LUS] Failed to create the window (%s)\n", window_ok ? "debugger/events" : "window");
+                fflush(stdout);
                 setup_result = ultramodern::renderer::SetupResult::GraphicsDeviceNotFound;
                 return;
             }
@@ -166,6 +168,7 @@ namespace {
             }
 
             printf("[LUS] renderer ready\n");
+            fflush(stdout);
             setup_result = ultramodern::renderer::SetupResult::Success;
             initialized = true;
         }

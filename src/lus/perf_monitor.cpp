@@ -85,6 +85,8 @@ namespace bm64lus {
             log_report(report_elapsed);
             report_totals = {};
             report_start = end;
+            // The log is buffered (see main); write it out along with the report.
+            fflush(stdout);
         }
         double overlay_elapsed = seconds_between(overlay_start, end);
         if (overlay_elapsed >= 1.0) {

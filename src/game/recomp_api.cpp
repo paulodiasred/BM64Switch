@@ -1,4 +1,5 @@
 #include <cmath>
+#include <string>
 
 #include "recomp.h"
 #include "librecomp/overlays.hpp"
@@ -43,9 +44,12 @@ extern "C" void recomp_puts(uint8_t* rdram, recomp_context* ctx) {
     PTR(char) cur_str = _arg<0, PTR(char)>(rdram, ctx);
     u32 length = _arg<1, u32>(rdram, ctx);
 
+    // One write for the whole string: on the Switch the log is a file on the SD card, where every write is slow.
+    std::string text(length, '\0');
     for (u32 i = 0; i < length; i++) {
-        fputc(MEM_B(i, (gpr)cur_str), stdout);
+        text[i] = MEM_B(i, (gpr)cur_str);
     }
+    fwrite(text.data(), 1, text.size(), stdout);
 }
 
 extern "C" void recomp_exit(uint8_t* rdram, recomp_context* ctx) {

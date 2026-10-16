@@ -386,10 +386,12 @@ int main(int argc, char** argv) {
     mkdir("sdmc:/switch/bm64recomp", 0777);
     chdir("sdmc:/switch/bm64recomp");
 
-    // There's no console on the Switch, so keep logs on the SD card, unbuffered so they survive a crash.
+    // There's no console on the Switch, so keep logs on the SD card. Every write to the SD card is slow (an unbuffered
+    // log line stalled the game for ~100 ms), so stdout is buffered and flushed every few seconds by the renderer's
+    // performance report; stderr stays unbuffered so errors survive a crash.
     // stderr gets its own file because the SD card can't have one file open for writing twice.
     if (freopen("sdmc:/switch/bm64recomp/bm64.log", "w", stdout) != nullptr) {
-        setvbuf(stdout, nullptr, _IONBF, 0);
+        setvbuf(stdout, nullptr, _IOFBF, 64 * 1024);
     }
     if (freopen("sdmc:/switch/bm64recomp/bm64-err.log", "w", stderr) != nullptr) {
         setvbuf(stderr, nullptr, _IONBF, 0);
