@@ -1,115 +1,124 @@
-# Bomberman 64: Recompiled
-[Bomberman 64: Recompiled](https://github.com/RevoSucks/BM64Recomp) is a project that uses [N64: Recompiled](https://github.com/Mr-Wiseguy/N64Recomp) to **statically recompile** Bomberman 64 into a native port with many new features, enhancements, and extensive mod support. This project uses [RT64](https://github.com/rt64/rt64) as the rendering engine to provide some of these enhancements.
+# Bomberman 64: Recompiled — Nintendo Switch
 
-### **This repository and its releases do not contain game assets. The original game is required to build or run this project.**
+English | **[Português](README.pt-BR.md)**
 
-## Table of Contents
-* [System Requirements](#system-requirements)
-* [Features](#features)
-  * [Plug and Play](#plug-and-play)
-  * [Fully Intact N64 Effects](#fully-intact-n64-effects)
-  * [Easy-to-Use Menus](#easy-to-use-menus)
-  * [High Framerate Support](#high-framerate-support)
-  * [Widescreen and Ultrawide Support](#widescreen-and-ultrawide-support)
-  * [Additional Control Options](#additional-control-options)
-  * [Low Input Lag](#low-input-lag)
-  * [Instant Load Times](#instant-load-times)
-  * [Linux and Steam Deck Support](#linux-and-steam-deck-support)
-* [Planned Features](#planned-features)
-* [FAQ](#faq)
-* [Known Issues](#known-issues)
-* [Building](#building)
-* [Libraries Used and Projects Referenced](#libraries-used-and-projects-referenced)
+> **Nintendo Switch port developed by [Paulo Dias](https://github.com/paulodiasred).**
+> If you enjoy it, leave a ⭐ on the repository!
 
-## System Requirements
-Currently, only a **Windows** exe is provided but other operating systems will be supported soon.<br/>
-A GPU supporting Direct3D 12.0 (Shader Model 6), Vulkan 1.2, or Metal Argument Buffers Tier 2 support is required to run this project. The oldest GPUs that should be supported for each vendor are:
-* GeForce GT 630
-* Radeon HD 7750 (the one from 2012, not to be confused with the RX 7000 series) and newer
-* Intel HD 510 (Skylake)
-* A Mac with Apple Silicon or an Intel 7th Gen CPU with MacOS 13.0+
+A Nintendo Switch homebrew port (`.nro`) of [Bomberman 64: Recompiled](https://github.com/RevoSucks/BM64Recomp).
+The game code is statically recompiled from the original ROM with [N64Recomp](https://github.com/N64Recomp/N64Recomp)
+and runs on [N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime). The PC version renders with RT64
+(Vulkan/D3D12/Metal), which isn't available on the Switch. This port renders with the Fast3D renderer from
+[libultraship](https://github.com/YoshiCrystal9/libultraship) over OpenGL, and its settings menu uses ImGui.
 
-On x86-64 PCs, a CPU supporting the SSE4.1 instruction set is also required (Intel Core 2 Penryn series or AMD Bulldozer and newer). ARM64 builds will work on any ARM64 CPU.
+| | |
+|---|---|
+| ![Title screen](docs/screenshots/title.png) | ![Intro cutscene](docs/screenshots/intro.png) |
+| ![Battle mode](docs/screenshots/battle.png) | ![Adventure mode](docs/screenshots/adventure.png) |
 
-If you have issues with crashes on startup, make sure your graphics drivers are fully up to date. 
+*Screenshots from the port's renderer (the same one used on the Switch).*
 
-## Features
+**This repository contains no game assets. You need your own Bomberman 64 (USA) ROM to build and to play.**
 
-#### Plug and Play
-Simply provide your copy of the 1.0 North American version of the game in the main menu and start playing! This project will automatically load assets from the provided copy, so there is no need to go through a separate extraction step or build the game yourself. Other versions of the game may be supported in the future.
+## Installing on the Switch
 
-#### Fully Intact N64 Effects
-A lot of care was put into RT64 to make sure all graphical effects were rendered exactly as they did originally on the N64. No workarounds or "hacks" were made to replicate these effects, with the only modifications to them being made for enhancement purposes such as widescreen support.
+1. Copy `BM64Recompiled.nro` to `sdmc:/switch/` on the SD card. It's the only file to install: the shaders and the
+   controller database are embedded in it.
+2. Put your Bomberman 64 (USA) ROM in one of these places:
+   - `sdmc:/switch/bm64recomp/` (the game creates this folder on first launch),
+   - `sdmc:/switch/`,
+   - the root of the SD card (`sdmc:/`).
 
-#### Easy-to-Use Menus
-Gameplay settings, graphics settings, input mappings, and audio settings can all be configured with the in-game config menu. The menus can all be used with mouse, controller, or keyboard for maximum convenience.
+   Any format works (`.z64`, `.n64` or `.v64`), with any file name.
+3. Launch it from the Homebrew Menu in **title override mode**: hold **R** while opening any game. The album (applet
+   mode) doesn't have enough memory.
 
-#### High Framerate Support
-Play at any framerate you want thanks to functionality provided by RT64! Game objects and terrain, texture scrolling, screen effects, and most HUD elements are all rendered at high framerates. By default, this project is configured to run at your monitor's refresh rate. You can also play at the original framerate of the game if you prefer. **Changing framerate has no effect on gameplay.**
+On first launch the ROM is validated and copied to `sdmc:/switch/bm64recomp/`. Settings, saves, the shader cache and
+the logs (`bm64.log`, `bm64-err.log`) also live in that folder.
 
-**Note**: External framerate limiters (such as the NVIDIA Control Panel) are known to potentially cause problems, so if you notice any stuttering then turn them off and use the manual framerate slider in the in-game graphics menu instead.
+**Settings menu:** press **−** (Minus) to open or close it. It has these tabs:
+- **Graphics:** internal resolution, anti-aliasing, texture filtering, VSync, FPS and the Switch CPU clock.
+- **Sound.**
+- **Controls:** rumble, deadzone and remapping.
+- **Cheats.**
 
-#### Widescreen and Ultrawide Support
-Any aspect ratio is supported, with most effects modded to work correctly in widescreen. The HUD can also be positioned at 16:9 when using ultrawide aspect ratios if preferred.
-
-**Note**: Some animation quirks can be seen at the edges of the screen in certain cutscenes when using very wide aspect ratios.
-
-#### Mod Support
-Install community made mods and texture packs! Mods can change any part of the game, including adding completely new features and content. You can install mods by simply dragging the mod files onto the game window before starting the game or by clicking the **Install Mods** button in the mod menu. Mods can be toggled in the mod menu, and some mods can be configured there as well.
-
-If you're interested in making texture packs, check out [the RT64 documentation](https://github.com/rt64/rt64/blob/main/TEXTURE-PACKS.md).
-
-#### Additional Control Options
-Customize your experience by setting your stick deadzone to your liking, as well as adjusting the Y axis inversion for aiming.
-
-#### Low Input Lag
-This project has been optimized to have as little input lag as possible, making the game feel more responsive than ever!
-
-#### Instant Load Times
-Saving and loading files, going from place to place, and pausing all happen in the blink of an eye thanks to the game running natively on modern hardware.
-
-#### Linux and Steam Deck Support
-A Linux binary is available for playing on most up-to-date distros, including on the Steam Deck.
-
-## FAQ
-
-#### What is static recompilation?
-Static recompilation is the process of automatically translating an application from one platform to another. For more details, check out the full description of how this project's recompilation works here: [N64: Recompiled](https://github.com/Mr-Wiseguy/N64Recomp).
-
-#### How is this related to the decompilation project?
-Unlike N64 ports in the past, this project is not based on the source code provided by a decompilation of the game. This is because static recompilation bypasses the need for decompiled source code when making a port, allowing ports to be made **without source code**. However, the reverse engineering work done by the decompilation team was invaluable for providing some of the enhancements featured in this project. For this reason, the project uses headers and some functions from the [Decompilation Project](https://github.com/RevoSucks/BM64Recomp) in order to make modifications to the game. Many thanks to the decompilation team for all of the hard work they've done.
-
-#### Where is the savefile stored?
-- Windows: `%LOCALAPPDATA%\BM64Recompiled\saves`
-- Linux: `~/.config/BM64Recompiled/saves`
-- macOS: `~/Library/Application Support/BM64Recompiled/saves`
-
-#### How do I choose a different ROM?
-**You don't.** This project is **only** a port of Bomberman 64, and it will only accept one specific ROM: the US version of the N64 release of Bomberman 64. ROMs in formats other than .z64 will be automatically converted, as long as it is the correct ROM. **It is not an emulator and it cannot run any arbitrary ROM.** 
-
-Instead, you can change the game by installing mods. See the [mod support](#mod-support) section for details.
-
-#### Can you run this project as a portable application?
-Yes, if you place a file named `portable.txt` in the same folder as the executable then this project will run in portable mode. In portable mode, the save files, config files, and mods are placed in the same folder as the executable.
-
-## Known Issues
-* Overlays such as MSI Afterburner and other software such as Wallpaper Engine can cause performance issues with this project that prevent the game from rendering correctly. Disabling such software is recommended.
+Settings are saved when the menu closes.
 
 ## Building
-Building instructions on how to build this project can be found in the [BUILDING.md](BUILDING.md) file.
 
-## Libraries Used and Projects Referenced
-* [RT64](https://github.com/rt64/rt64) for the project's rendering engine
-* [RmlUi](https://github.com/mikke89/RmlUi) for building the menus and launcher
-* [lunasvg](https://github.com/sammycage/lunasvg) for SVG rendering, used by RmlUi
-* [FreeType](https://freetype.org/) for font rendering, used by RmlUi  
-* [moodycamel::ConcurrentQueue](https://github.com/cameron314/concurrentqueue) for semaphores and fast, lock-free MPMC queues
-* [Gamepad Motion Helpers](https://github.com/JibbSmart/GamepadMotionHelpers) for sensor fusion and calibration algorithms to implement gyro aiming
-* [Bomberman 64 Decompilation](https://github.com/Bomberhackers/bm64) for headers and some function definitions, used for making patches or some enhancements
-* [Ares emulator](https://github.com/ares-emulator/ares) for RSP vector instruction reference implementations, used in RSP recompilation
+Everything runs in Docker, so on Windows you only need Docker Desktop and PowerShell. Clone with submodules:
 
-# Special Thanks:
+```powershell
+git clone --recurse-submodules https://github.com/paulodiasred/BM64Switch.git
+cd BM64Switch
+```
 
-* [ZeldaRET](https://github.com/zeldaret) : for teaching me the fundamental knowledge of N64 decompilation.
-* [Decompals](https://github.com/decompals) : for helping in the initial disassembly and decompilation of the game.
-* [Wiseguy](https://github.com/Mr-Wiseguy) and [DarioSamo](https://github.com/DarioSamo): for creating [N64Recomp](https://github.com/N64Recomp) and [RT64](https://github.com/rt64/rt64), assisting with fantastic technical support along the way.
+| Command | What it does |
+|---|---|
+| `.\build.ps1 generate C:\path\bomberman64.z64` | Once: decompresses the ROM and recompiles the game (`RecompiledFuncs/`), the audio microcode (`rsp/aspMain.cpp`) and the patches (`RecompiledPatches/`). |
+| `.\build.ps1 switch` | Builds `dist\BM64Recompiled.nro`, plus the `.elf` for reading crash reports. |
+| `.\build.ps1 all C:\path\bomberman64.z64` | `generate` + `switch`. |
+| `.\build.ps1 patches` | Recompiles only the patches, after editing `patches\*.c`. |
+| `.\build.ps1 linux` | Linux test build (same code and renderer) in `build-linux\`. |
+| `.\build.ps1 test run.sh SHOTS="10 20 30"` | Linux build + headless run of a `tools\test\` script, which takes screenshots in `run\`. The ROM must be in `run\`. |
+| `.\build.ps1 shell` | Opens a shell in the tools Docker image. |
+| `.\build.ps1 clean` | Deletes `build-linux\`, `build-switch\` and `dist\`. |
+
+The first run creates two Docker images:
+- `bm64switch-host`: Ubuntu with clang, N64Recomp, Xvfb and Mesa.
+- `bm64switch-nx`: devkitA64 with libnx.
+
+It also downloads and builds tools into `build-tools\`: N64Recomp, and `bm64decompress` from the
+[decompilation project](https://github.com/Bomberhackers/bm64).
+
+Nothing generated from the ROM may be committed. The `.gitignore` already covers ROMs, `RecompiledFuncs/`,
+`RecompiledPatches/`, `rsp/` and the patch binaries.
+
+## Layout
+
+- `src/lus/`: the renderer.
+  - `dl_translator.cpp` translates F3DEX display lists and RT64's extended GBI for libultraship. It also emulates the
+    motion blur framebuffer and the fog-based fades.
+  - `lus_render_context.cpp` is the render context.
+  - `lus_menu.cpp` is the ImGui menu.
+  - The other files replace the PC version's RmlUi UI.
+- `src/switch/`: Switch glue.
+  - 2 MB stacks and cleared TLS for threads created through `pthread_create`.
+  - sljit configured without executable memory.
+- `lib-patches/`: changes to the submodules (N64ModernRuntime, N64Recomp and libultraship). `tools/setup.sh` applies
+  them, and `build.ps1` runs it automatically.
+- `patches/`: game patches (C for MIPS), recompiled along with the game.
+- `third_party/rt64/`: the extended GBI header and the `file_to_c` tool, copied from RT64 (MIT).
+- `tools/test/`: headless test scripts.
+  - `run.sh`: screenshots at fixed times.
+  - `play.sh`: a sequence of key presses and screenshots.
+  - `audio.sh`: audio levels.
+  - `gdbrun.sh`: backtrace.
+
+## Debugging
+
+- **Logs:** `sdmc:/switch/bm64recomp/bm64.log` and `bm64-err.log`.
+- **Atmosphère crash reports:** they're in `sdmc:/atmosphere/crash_reports/`. To read them, use
+  `aarch64-none-elf-addr2line -e dist/BM64Recompiled.elf <offset>` in the `bm64switch-nx` image, with the offsets
+  inside the game module.
+- **Display list dumps:** `BM64_DL_DUMP=N` (Linux build) writes every Nth frame's display list to `dl_<frame>.txt`.
+
+## Known limitations
+
+- Code mods don't work: homebrew can't create executable memory.
+- Applet mode (album) doesn't have enough memory. Use title override.
+- The first time an effect appears it can still hitch briefly while its shader compiles. Shaders are saved to
+  `shaders.bin` and precompiled on later launches.
+
+## Credits
+
+- **[Paulo Dias](https://github.com/paulodiasred):** Nintendo Switch port (libultraship renderer, display list
+  translator, ImGui menu, Switch runtime adaptations and build).
+- [BM64Recomp](https://github.com/RevoSucks/BM64Recomp) (RevoSucks and contributors): the base of this port.
+- [N64Recomp / N64ModernRuntime](https://github.com/N64Recomp) (Wiseguy and contributors).
+- [libultraship](https://github.com/Kenix3/libultraship) and the Switch fork by
+  [YoshiCrystal9](https://github.com/YoshiCrystal9/libultraship).
+- [RT64](https://github.com/rt64/rt64): extended GBI and `file_to_c`.
+- [Bomberhackers/bm64](https://github.com/Bomberhackers/bm64): decompilation and `bm64decompress`.
+
+The original project's license is in [LICENSE.txt](LICENSE.txt).
