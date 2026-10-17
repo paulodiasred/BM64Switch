@@ -216,6 +216,11 @@ if (BM64_SWITCH)
     target_link_options(BM64Recompiled PRIVATE -Wl,--wrap=pthread_create)
 
     set(BM64_NRO_VERSION "1.0.0")
+    # icons/custom-icon.jpg (256x256 JPEG, not committed) replaces the default icon when present.
+    set(BM64_ICON ${CMAKE_SOURCE_DIR}/icons/nx-icon.jpg)
+    if (EXISTS ${CMAKE_SOURCE_DIR}/icons/custom-icon.jpg)
+        set(BM64_ICON ${CMAKE_SOURCE_DIR}/icons/custom-icon.jpg)
+    endif()
     nx_generate_nacp(BM64Recompiled.nacp
         NAME "Bomberman 64: Recompiled"
         AUTHOR "Paulo Dias"
@@ -223,7 +228,7 @@ if (BM64_SWITCH)
     )
     nx_create_nro(BM64Recompiled
         NACP BM64Recompiled.nacp
-        ICON ${CMAKE_SOURCE_DIR}/icons/nx-icon.jpg
+        ICON ${BM64_ICON}
         ROMFS ${BM64_ROMFS_DIR}
     )
     add_dependencies(BM64Recompiled_nro GenerateO2R)

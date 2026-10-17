@@ -43,3 +43,6 @@ imgui.ini
 
 # Python
 __pycache__/
+
+# Local icon override (e.g. the box art): used by the build when present, never committed
+icons/custom-icon.jpg

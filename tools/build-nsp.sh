@@ -36,7 +36,10 @@ stage)
     npdmtool tools/nsp/bm64.npdm.json "$STAGE/exefs/main.npdm"
     VERSION=$(grep -oP 'BM64_NRO_VERSION "\K[^"]+' CMakeLists.txt)
     nacptool --create "Bomberman 64: Recompiled" "Paulo Dias" "$VERSION" "$STAGE/control/control.nacp" --titleid="$TITLE_ID"
-    cp icons/nx-icon.jpg "$STAGE/control/icon_AmericanEnglish.dat"
+    # icons/custom-icon.jpg (not committed) replaces the default icon when present.
+    ICON=icons/nx-icon.jpg
+    [ -f icons/custom-icon.jpg ] && ICON=icons/custom-icon.jpg
+    cp "$ICON" "$STAGE/control/icon_AmericanEnglish.dat"
     cp -r build-switch/romfs "$STAGE/romfs"
     ;;
 override)
