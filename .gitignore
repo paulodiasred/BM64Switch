@@ -40,3 +40,6 @@ imgui.ini
 # Console keys and installable packages: never commit them
 *.keys
 *.nsp
+
+# Python
+__pycache__/
