@@ -581,3 +581,27 @@ extern "C" void bm64_glyph_load_end(uint8_t* rdram, recomp_context* ctx) {
     write_glyph(rdram, buffer, g);
     pending_accent = -1;
 }
+
+// Debugging aid for building the translation (see patches/text_patches.c): BM64_FILE_DUMP=1 dumps every file of the
+// game's file system, decompressed, to filedump/<id>.bin.
+extern "C" void bm64_get_file_dump_enabled(uint8_t* rdram, recomp_context* ctx) {
+    (void)rdram;
+    const char* env = getenv("BM64_FILE_DUMP");
+    ctx->r2 = (env != nullptr && env[0] == '1') ? 1 : 0;
+}
+
+extern "C" void bm64_dump_file(uint8_t* rdram, recomp_context* ctx) {
+    int32_t file = static_cast<int32_t>(ctx->r4);
+    uint32_t data = static_cast<uint32_t>(ctx->r5);
+    uint32_t size = static_cast<uint32_t>(ctx->r6);
+    std::error_code ec;
+    std::filesystem::create_directories("filedump", ec);
+    char name[64];
+    snprintf(name, sizeof(name), "filedump/%04d.bin", file);
+    if (FILE* out = fopen(name, "wb")) {
+        for (uint32_t i = 0; i < size; i++) {
+            fputc(read_byte(rdram, data + i), out);
+        }
+        fclose(out);
+    }
+}

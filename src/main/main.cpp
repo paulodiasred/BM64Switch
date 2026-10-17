@@ -254,6 +254,9 @@ RspUcodeFunc* get_rsp_microcode(const OSTask* task) {
 }
 
 extern "C" void recomp_entrypoint(uint8_t * rdram, recomp_context * ctx);
+extern "C" void bm64_get_file_dump_enabled(uint8_t* rdram, recomp_context* ctx);
+extern "C" void bm64_dump_file(uint8_t* rdram, recomp_context* ctx);
+extern "C" void bm64_on_file_loaded(uint8_t* rdram, recomp_context* ctx);
 gpr get_entrypoint_address();
 
 // array of supported GameEntry objects
@@ -444,6 +447,9 @@ int main(int argc, char** argv) {
     REGISTER_FUNC(recomp_get_always_have_red_bombs);
     REGISTER_FUNC(recomp_get_infinite_credits);
     REGISTER_FUNC(recomp_get_infinite_lives);
+    REGISTER_FUNC(bm64_get_file_dump_enabled);
+    REGISTER_FUNC(bm64_dump_file);
+    REGISTER_FUNC(bm64_on_file_loaded);
     recompui::register_ui_exports();
     recomputil::register_data_api_exports();
 

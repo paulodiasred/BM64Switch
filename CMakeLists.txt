@@ -145,6 +145,7 @@ target_sources(BM64Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/game/minicoro.cpp
     ${CMAKE_SOURCE_DIR}/src/game/process_coroutines.cpp
     ${CMAKE_SOURCE_DIR}/src/game/translation.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/dialogue_translation.cpp
 
     ${CMAKE_SOURCE_DIR}/src/lus/dl_translator.cpp
     ${CMAKE_SOURCE_DIR}/src/lus/lus_render_context.cpp

@@ -91,3 +91,7 @@ recomp_get_always_have_remote_bombs = 0x8F00013C;
 recomp_get_always_have_red_bombs = 0x8F000140;
 recomp_get_infinite_credits = 0x8F000144;
 recomp_get_infinite_lives = 0x8F000148;
+recomp_alloc = 0x8F00014C;
+bm64_get_file_dump_enabled = 0x8F000150;
+bm64_dump_file = 0x8F000154;
+bm64_on_file_loaded = 0x8F000158;

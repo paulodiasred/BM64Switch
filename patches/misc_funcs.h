@@ -13,6 +13,10 @@ DECLARE_FUNC(u32, recomp_get_pending_set_time);
 DECLARE_FUNC(s32, recomp_get_film_grain_enabled);
 DECLARE_FUNC(s32, osPiStartDma_recomp, OSIoMesg *, s32, s32, u32, void *, u32, OSMesgQueue *);
 DECLARE_FUNC(void, yield_self_1ms, void);
+DECLARE_FUNC(void*, recomp_alloc, u32 size);
+DECLARE_FUNC(s32, bm64_get_file_dump_enabled, void);
+DECLARE_FUNC(void, bm64_dump_file, s32 file, void* data, s32 size);
+DECLARE_FUNC(void, bm64_on_file_loaded, s32 file, void* data, s32 size);
 DECLARE_FUNC(void, execute_overlay, void);
 
 #endif

@@ -1321,6 +1321,8 @@ RECOMP_EXPORT void clearTrackedTexture(void) {
     }
 }
 
+void bm64_dump_all_files(void); // text_patches.c
+
 // allocate and load model
 RECOMP_PATCH void *func_8026CE28(s32 fileID) {
     s32 id;
@@ -1348,6 +1350,7 @@ RECOMP_PATCH void *func_8026CE28(s32 fileID) {
     if (fileID == -1) {
         return (void*)-1;
     }
+    bm64_dump_all_files();
     id = func_8026CD24(fileID);
     if (fileID != D_800A7F30[id].fileID) {
         recomp_printf("[func_8026CE28] Loading FileID: (0x%08X) %d\n", fileID, fileID);
@@ -1359,6 +1362,8 @@ RECOMP_PATCH void *func_8026CE28(s32 fileID) {
         D_800A7F30[id].unk4 = func_802998EC(size); // malloc
         func_80292BD0(sp24, D_800A7F30[id].unk4, size);
         func_80226368(sp24);
+        // Translated dialogue images are redrawn here (src/game/dialogue_translation.cpp).
+        bm64_on_file_loaded(fileID, D_800A7F30[id].unk4, size);
     }
     D_800A7F30[id].unkC++;
 

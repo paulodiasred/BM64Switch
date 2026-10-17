@@ -1,0 +1,500 @@
+# Bomberman 64: Recompiled - tradução das falas (imagens de diálogo) para português do Brasil
+#
+# Cada conversa do jogo é uma imagem (256 px de largura) com várias caixas de 48 px de altura empilhadas, 3 linhas
+# de texto por caixa (a cada 16 px). Para cada arquivo [número], as entradas dizem onde apagar e o que escrever:
+#   clear y0 y1 x0 x1           apaga a área (linhas y0-y1, colunas x0-x1)
+#   cleartext y0 y1 x0 x1       apaga só o texto (pixels na cor do texto) de uma área com desenho
+#   line y0 y1 x0 x1: texto     apaga e escreve o texto (fonte das falas)
+#   small y0 y1 x0 x1: texto    o mesmo com a fonte pequena das legendas dos diagramas
+# No texto: {x0-x1} recoloca o ícone original dessas colunas (bomba, botão...) naquela posição;
+# um ">" no começo alinha à direita e um "^" centraliza.
+# As linhas "# en:" são o texto original, só para referência.
+
+[856]
+# Sirius - tutorial (primeira fase)
+clear 0 47 46 255
+# en: I'm here to help, just like / I promised. First, I need to teach / you some basic moves.
+line 2 14 50 255: Estou aqui para ajudar, como eu
+line 18 30 50 255: prometi. Primeiro, preciso te ensinar
+line 34 46 50 255: alguns movimentos básicos.
+# en: Move the Control / Stick a little / to walk, | and a lot to run.
+small 50 57 40 131: >Incline pouco
+small 62 70 60 131: >o Analógico
+small 74 82 60 133: >para andar,
+small 50 57 168 255: e bastante
+small 62 70 196 255: p/ correr.
+clear 96 383 0 255
+# en: Keep in mind that you should walk when / you're in closed-in, dangerous areas, / but feel free to run in open, safe areas.
+line 98 110 4 255: Lembre-se de andar quando estiver em
+line 114 126 4 255: áreas fechadas e perigosas, mas pode
+line 130 142 4 255: correr à vontade em áreas abertas e seguras.
+# en: Press the [A] Button to set a [bomb]. / The [bomb] will soon [boom]. Move away / from the [bomb] so you don't get burned.
+line 146 158 4 255: Aperte o Botão {64-73} para pôr uma {171-185}.
+line 162 174 4 255: A {29-43} logo vai {106-130}. Afaste-se
+line 178 190 4 255: da {59-73 173-190} para não se queimar.
+# en: A [pot] or a [block] can be destroyed with a [boom]. / Items may appear from a destroyed object, / so blow-up as many objects as you can.
+line 194 206 4 255: Um {19-30} ou um {61-77} é destruído com uma {220-244}.
+line 210 222 4 255: Itens podem surgir de objetos destruídos,
+line 226 238 4 255: então exploda o máximo de objetos que puder.
+# en: When you find a suspicious area, / set a [bomb] there or stand on top of it, / it could be a special switch.
+line 242 254 4 255: Quando achar uma área suspeita,
+line 258 270 4 255: ponha uma {36-50} ou pise em cima dela,
+line 274 286 4 255: pode ser um interruptor especial.
+# en: There is a large Red Gem in this ruin, which / is protected by a Magical Barrier. Step on / the 4 switches to release the barrier.
+line 290 302 2 255: Há uma grande Gema Vermelha nesta ruína,
+line 306 318 2 255: protegida por uma Barreira Mágica. Pise nos
+line 322 334 2 255: 4 interruptores para desfazer a barreira.
+# en: That's it for now. You can talk to me by / pressing the [B] Button. My name is Sirius / - a name you should remember!
+line 338 350 4 255: Por enquanto é só. Fale comigo apertando
+line 354 366 4 255: o Botão {81-89}. Meu nome é Sirius
+line 370 382 4 255: - um nome que você deve lembrar!
+
+[205]
+# en: From now on, Altair's troopers / will try even harder to defeat you.
+line 10 22 50 255: Daqui em diante, as tropas de Altair
+line 26 38 50 255: vão se esforçar mais para te derrotar.
+# en: You will encounter enemies with projectile / weapons, so be sure to use the Bomb Kick / to defeat them from a distance.
+line 50 62 4 255: Você vai encontrar inimigos com armas de
+line 66 78 4 255: longo alcance, então use o Chute de Bomba
+line 82 94 4 255: para derrotá-los a distância.
+
+[206]
+# en: The passages inside Altair's castle / are controlled by electronic / switches.
+line 2 14 50 255: As passagens do castelo de Altair
+line 18 30 50 255: são controladas por interruptores
+line 34 46 50 255: eletrônicos.
+# en: Turn the switch ON to open the passage / door. This will also activate the traps, so / be sure to proceed with caution.
+line 50 62 4 255: Ligue o interruptor (ON) para abrir a porta
+line 66 78 4 255: da passagem. Isso também ativa as armadilhas,
+line 82 94 4 255: então avance com cuidado.
+# en: Deactivate the alarm by turning the / switches OFF. The switches can be turned / ON and OFF just by stepping on them.
+line 98 110 4 255: Desative o alarme desligando os
+line 114 126 4 255: interruptores (OFF). Eles ligam e desligam
+line 130 142 4 255: só de você pisar neles.
+# en: You're now a stones-throw away from / Altair. Be careful.
+line 154 166 4 255: Agora você está a um passo de
+line 170 182 4 255: Altair. Tome cuidado.
+
+[629]
+# en: It's frozen, and can't be read.
+line 18 30 0 255: ^Está congelado e não dá para ler.
+
+[630]
+# en: Danger! Danger! / Beware of avalanches!! / Do not use many bombs.
+line 2 14 67 255: Perigo! Perigo!
+line 18 30 67 255: Cuidado com avalanches!!
+line 34 46 67 255: Não use muitas bombas.
+
+[631]
+# en: So, you want to know something / about me? Well...my home planet / was destroyed by Altair.
+line 2 14 50 255: Então você quer saber algo
+line 18 30 50 255: sobre mim? Bem... meu planeta natal
+line 34 46 50 255: foi destruído por Altair.
+# en: I fought him myself, but I was unable to / even scratch - let alone defeat - him. In / the end, he killed my brother and sister.
+line 50 62 4 255: Eu mesmo lutei contra ele, mas não consegui
+line 66 78 4 255: nem arranhá-lo - quanto mais vencê-lo. No
+line 82 94 4 255: fim, ele matou meu irmão e minha irmã.
+# en: Since then, I've been searching for a hero / who could defeat him, and return peace to / the universe. That is why I'm here...
+line 98 110 4 255: Desde então, procuro um herói que
+line 114 126 4 255: possa derrotá-lo e devolver a paz ao
+line 130 142 4 255: universo. É por isso que estou aqui...
+# en: Although this reason may be troubling / you, my reason for helping you is not / an honorable one. I'm in this for revenge!
+line 146 158 4 255: Embora esse motivo possa te incomodar,
+line 162 174 4 255: minha razão para te ajudar não é
+line 178 190 4 255: nobre. Faço isso por vingança!
+
+[632]
+# en: It's almost impossible to walk up / a frozen slope. / But, with a little ingenuity...
+line 2 14 50 255: É quase impossível subir uma
+line 18 30 50 255: ladeira congelada.
+line 34 46 50 255: Mas, com um pouco de engenho...
+# en: ...and with the help of a little momentum, / you should be able to climb up that slope.
+line 57 69 4 255: ...e com a ajuda de um bom impulso,
+line 73 85 4 255: você deve conseguir subir essa ladeira.
+
+[654]
+# en: Water used to run from that / waterway, to that statue of / a goddess.
+line 2 14 50 255: A água corria daquele canal
+line 18 30 50 255: até aquela estátua de
+line 34 46 50 255: uma deusa.
+# en: Altair had the waterway moved, / and now the water no longer reaches / it. Will you repair the waterway?  (estátua à direita)
+line 50 62 4 205: Altair mudou o canal de lugar,
+line 66 78 4 190: e agora a água não chega
+line 82 94 4 186: mais lá. Vai consertar o canal?
+cleartext 66 78 191 222
+cleartext 82 94 187 202
+
+[655]
+# en: You've repaired the waterway. / Take the stairs, and they will lead / you to the place where...
+line 2 14 50 255: Você consertou o canal.
+line 18 30 50 255: Suba a escada e ela vai te levar
+line 34 46 50 255: ao lugar onde...
+# en: you can destroy the anchor. / First, you must defeat the boss of this / area.
+line 50 62 4 255: você pode destruir a âncora.
+line 66 78 4 255: Mas antes, derrote o chefe desta
+line 82 94 4 255: área.
+
+[656]
+# en: Altair has 3 subordinates named, / Regulus, Artemis and Orion.
+line 13 25 50 255: Altair tem 3 subordinados:
+line 29 41 50 255: Regulus, Artemis e Orion.
+# en: All 3 have powerful special attacks. / You will eventually have to fight them, / so prepare yourself for the battle.
+line 50 62 4 255: Os 3 têm ataques especiais poderosos.
+line 66 78 4 255: Uma hora você vai ter que enfrentá-los,
+line 82 94 4 255: então prepare-se para a batalha.
+
+[657]
+# en: It's useless for you to oppose me. / Lie down quietly and meet / your end.
+line 2 14 50 255: É inútil se opor a mim.
+line 18 30 50 255: Deite-se quietinho e encare
+line 34 46 50 255: o seu fim.
+
+[816]
+# en: Now, let's see how strong you've / become!!
+line 10 22 50 255: Agora vamos ver o quanto você
+line 26 38 50 255: ficou forte!!
+
+[817]
+# en: ...better than I expected. Keep / fighting like that, and you should / be able to defeat them. Good Luck!
+line 2 14 50 255: ...melhor do que eu esperava. Continue
+line 18 30 50 255: lutando assim e você deve conseguir
+line 34 46 50 255: derrotá-los. Boa sorte!
+
+[818]
+# en: Target confirmed. Commencing / sampling. Target termination / program activated.
+line 2 14 50 255: Alvo confirmado. Iniciando
+line 18 30 50 255: amostragem. Programa de eliminação
+line 34 46 50 255: do alvo ativado.
+
+[819]
+# en: Damage level over 90% ...unable / to execute program. Reporting / back on the sampling data.
+line 2 14 50 255: Dano acima de 90%... incapaz de
+line 18 30 50 255: executar o programa. Enviando
+line 34 46 50 255: os dados da amostragem.
+
+[820]
+# en: ...Not bad. I underestimated you. / However, you've upset me. / Prepare to meet your fate.
+line 2 14 50 255: ...Nada mal. Eu te subestimei.
+line 18 30 50 255: Mas você me irritou.
+line 34 46 50 255: Prepare-se para encarar seu destino.
+
+[821]
+# en: It's been a while, Altair. Now that / I've taken back the Omni Cube / you stole from me, here's a present.
+line 2 14 48 255: Quanto tempo, Altair. Agora que
+line 18 30 48 255: recuperei o Omni Cube que você
+line 34 46 48 255: me roubou, aqui vai um presente.
+
+[822]
+# en: Bomberman, you've worked out / better than I had expected. Thanks / for helping me regain my power!
+line 2 14 50 255: Bomberman, você se saiu
+line 18 30 50 255: melhor do que eu esperava. Obrigado
+line 34 46 50 255: por me ajudar a recuperar meu poder!
+# en: With my power back, I have nothing to / fear. It was worth telling you all those / corny lies, and helping you out.
+line 50 62 4 255: Com meu poder de volta, não tenho nada a
+line 66 78 4 255: temer. Valeu a pena te contar todas aquelas
+line 82 94 4 255: mentiras bobas e te ajudar.
+# en: You've out-lived your usefulness, you're / starting to annoy me. Get ready to be / destroyed along with Planet Bomber.
+line 98 110 4 255: Você já não tem mais utilidade e está
+line 114 126 4 255: começando a me irritar. Prepare-se para ser
+line 130 142 4 255: destruído junto com o Planeta Bomber.
+
+[823]
+# en: Youuuuu!  (letras grandes)
+clear 10 36 46 210
+big 14 34 49 230: VOCÊÊÊ!
+
+[824]
+# en: Huh? What a joke! Hey, Bomb!! / I'll take care of you later! / First, I need to get rid of him!!  (retrato à direita)
+line 2 14 4 205: Hã? Que piada! Ei, Bomb!!
+line 18 30 4 205: Eu cuido de você depois!
+line 34 46 4 205: Primeiro, preciso sumir com ele!!
+
+[843]
+# en: Mission complete.
+line 18 30 54 255: Missão cumprida.
+# en: Great job! Well, we've certainly / cleaned up this planet! / What's our next target?  (retrato à direita)
+line 50 62 4 205: Ótimo trabalho! Bem, com certeza
+line 66 78 4 205: limpamos este planeta!
+line 82 94 4 205: Qual é o nosso próximo alvo?
+
+[844]
+# en: Do you plan to defeat them? / Then, I'll let you in on a secret. / I've got a bone to pick with them.
+line 2 14 50 255: Pretende derrotá-los?
+line 18 30 50 255: Então vou te contar um segredo.
+line 34 46 50 255: Tenho contas a acertar com eles.
+# en: Because of the force field, / there's no way you'll be able to get near, / let alone get in, the Central Base!
+line 50 62 4 255: Por causa do campo de força,
+line 66 78 4 255: não há como você chegar perto da Base
+line 82 94 4 255: Central, muito menos entrar nela!
+# en: But, if you destroy the 4 anchors to / the base, the field will be deactivated and / you can destroy the base from within.
+line 98 110 4 255: Mas, se destruir as 4 âncoras da
+line 114 126 4 255: base, o campo será desativado e você
+line 130 142 4 255: poderá destruir a base por dentro.
+# en: ...it's asking too much to have you go / alone, so I'll give you a hand.
+line 154 166 4 255: ...é pedir demais que você vá
+line 170 182 4 255: sozinho, então vou te dar uma mão.
+
+[857]
+# Sirius - tutorial de levantar e arremessar
+clear 0 47 46 255
+# en: Hi Bomberman. / This time, I'm going to teach you / how to lift and throw.
+line 2 14 50 255: Olá, Bomberman.
+line 18 30 50 255: Desta vez, vou te ensinar a
+line 34 46 50 255: levantar e arremessar.
+# en: (diagrama) Use the [B] Button / to lift. | Press the / [B] Button / again / to throw.
+small 52 58 0 38: >Aperte
+small 52 58 50 83: e
+small 64 70 4 70: levante.
+small 50 56 140 182: Aperte
+small 62 68 154 184: outra
+clear 74 75 159 182
+small 76 82 150 184: vez e
+small 86 92 140 205: arremesse.
+clear 96 287 0 255
+# en: There are 3 distances you can throw, / which are determined by the amount of / pressure you apply to the Control Stick.
+line 98 110 4 255: Há 3 distâncias de arremesso, que
+line 114 126 4 255: dependem do quanto você inclina
+line 130 142 4 255: o Analógico.
+# en: Hit enemies with a [bomb] to knock them / unconscious. Unconscious enemies can / be picked up and thrown.
+line 146 158 4 255: Acerte inimigos com uma {121-135} para
+line 162 174 4 255: deixá-los tontos. Inimigos tontos
+line 178 190 4 255: podem ser erguidos e arremessados.
+# en: A tough enemy can be knocked / unconscious, picked up and thrown into / another area. Oops, I forgot to mention...
+line 194 206 4 255: Um inimigo resistente pode ser nocauteado,
+line 210 222 4 255: erguido e arremessado para outra
+line 226 238 4 255: área. Ops, esqueci de mencionar...
+# en: Use the [C] Buttons to change the camera / angle, even while the game is paused.
+line 250 262 4 255: Use os Botões {53-61} para mudar o ângulo
+line 266 278 4 255: da câmera, mesmo com o jogo pausado.
+
+[858]
+# Sirius - tutorial do Chute de Bomba
+clear 0 47 46 255
+# en: This time, I'll teach you the / Bomb Kick, which can be just as / useful as the Bomb Throw.
+line 2 14 50 255: Desta vez, vou te ensinar o
+line 18 30 50 255: Chute de Bomba, que pode ser tão útil
+line 34 46 50 255: quanto o Arremesso de Bomba.
+# en: (diagrama) Bomb Kick: | Run into / a bomb, | or press the / [A] Button twice / while still.
+small 49 55 2 45: Chute:
+small 49 55 80 134: Corra até
+small 60 66 80 126: a bomba
+small 49 55 156 211: ou aperte
+small 60 66 168 221: 2 vezes
+small 71 77 156 199: parado.
+clear 96 191 0 255
+# en: When kicked, a [bomb] can be stopped using / the R Button. An enemy that's hit with / a [bomb] will be knocked unconscious.
+line 98 110 4 255: Uma {102-116} chutada pode ser parada com
+line 114 126 4 255: o Botão R. Um inimigo atingido por
+line 130 142 4 255: uma {16-30} fica inconsciente.
+# en: You can kick a [bomb] along a wall, or into / a space between the walls. Try using this / technique in different situations.
+line 146 158 4 255: Dá para chutar uma {101-115} rente à parede
+line 162 174 4 255: ou num vão entre paredes. Use essa
+line 178 190 4 255: técnica em várias situações.
+
+[859]
+# Sirius - tutorial da Megabomba (Pumped Bomb)
+clear 0 47 46 255
+# en: I'm going to teach you how to use / the most important and powerful / technique, the Pumped Bomb.
+line 2 14 50 255: Vou te ensinar a técnica mais
+line 18 30 50 255: importante e poderosa de todas:
+line 34 46 50 255: a Megabomba.
+# en: (diagrama) Pick up the bomb, | and repeatedly press the / [A] Button. When the bomb / starts to shine, it's / completely pumped up.
+small 50 58 2 90: Pegue a bomba,
+small 50 58 94 207: e aperte sem parar
+small 61 67 104 205: Quando a bomba
+small 72 80 94 199: brilhar, ela está
+small 83 91 94 199: totalmente cheia.
+clear 96 287 0 255
+# en: A use for the Pumped Bomb is... By the / way, did you notice the sound this Blue / Column makes when you hit it with a [boom]?
+line 98 110 4 255: Um uso da Megabomba é... Aliás, você
+line 114 126 4 255: notou o som que esta Coluna Azul faz
+line 130 142 4 255: quando você a atinge com uma {226-250}?
+# en: Objects come in 3 strengths. You can / destroy them with a [bomb], a Pumped Bomb, / or a [bomb].
+line 146 158 4 255: Há objetos de 3 resistências. Você pode
+line 162 174 4 255: destruí-los com uma {128-142}, uma Megabomba
+line 178 190 4 255: ou uma {34-48}.
+# en: Think of that sound as a sign that your / [bomb] cannot destroy the object, and you'll / need a more powerful [bomb].
+line 194 206 4 255: Encare esse som como um sinal de que sua
+line 210 222 4 255: {4-18} não destrói o objeto e você vai
+line 226 238 4 255: precisar de uma {136-150} mais forte.
+# en: The support of this bridge can be destroyed / with a Pumped Bomb. Give it a try. / Another use for the Pumped Bomb is...
+line 242 254 3 255: O suporte desta ponte pode ser destruído
+line 258 270 3 255: com uma Megabomba. Experimente.
+line 274 286 3 255: Outro uso da Megabomba é...
+# en: (diagrama) An enemy / with / a high HP | can be squashed / with a / Pumped / Bomb.
+small 290 298 12 56: Inimigo
+small 300 306 17 40: com
+small 310 319 12 56: HP alto
+small 290 297 118 195: pode ser
+small 300 306 118 167: esmagado
+small 310 317 118 158: c/ uma
+small 320 326 118 160: Mega-{145-152}
+small 328 334 118 158: bomba.
+clear 336 383 0 255
+# en: The Pumped Bomb has more firepower, and / causes more damage. It will be useful when / battling a Boss. Master this technique!
+line 338 350 4 255: A Megabomba tem mais poder de fogo e
+line 354 366 4 255: causa mais dano. Vai ser útil contra
+line 370 382 4 255: chefes. Domine essa técnica!
+
+[860]
+# Sirius - tutorial do Pulo de Bomba e da Explosão Aérea
+clear 0 47 46 255
+# en: You've learned quite a bit. / This time, I'll teach you a special / move called the Bomb Jump.
+line 2 14 50 255: Você aprendeu bastante.
+line 18 30 50 255: Desta vez, vou te ensinar um golpe
+line 34 46 50 255: especial chamado Pulo de Bomba.
+# en: (diagrama) In an area / like this, | you'll need to use / a bomb to cross.
+small 52 58 26 86: Numa área
+small 64 72 26 86: como esta,
+small 52 60 120 199: use uma bomba
+small 64 70 120 200: para cruzar.
+clear 96 335 0 255
+# en: You can cross over to the next platform / by using the Bomb Jump. / Practice it here to get the hang of it.
+line 98 110 4 255: Você pode passar para a próxima plataforma
+line 114 126 4 255: usando o Pulo de Bomba.
+line 130 142 4 255: Pratique aqui para pegar o jeito.
+# en: Next is the Aerial Bomb Explosion. You'll / need a Remote Bomb. With this technique, / you'll be able to destroy objects in the air.
+line 146 158 4 255: A seguir, a Explosão Aérea. Você vai
+line 162 174 4 255: precisar de uma Bomba Remota. Com essa
+line 178 190 4 255: técnica, dá para destruir objetos no ar.
+# en: Throw the bomb, and press the Z Button / while the bomb is at its highest point in / the air.
+line 194 206 4 255: Arremesse a bomba e aperte o Botão Z
+line 210 222 4 255: quando ela estiver no ponto mais alto
+line 226 238 4 255: no ar.
+# en: Use this technique in a battle with a / Boss. After you pick up a Remote Bomb, / use it on the block that's in the air.
+line 242 254 4 255: Use essa técnica na luta contra um
+line 258 270 4 255: chefe. Depois de pegar uma Bomba Remota,
+line 274 286 4 255: use-a no bloco que está no ar.
+# en: If you master these 2 techniques, you / should be able to handle any situation / you encounter. Good Luck!!
+line 290 302 4 255: Se dominar essas 2 técnicas, você vai
+line 306 318 4 255: conseguir lidar com qualquer situação
+line 322 334 4 255: que encontrar. Boa sorte!!
+
+[861]
+# Sirius - tutorial dos itens
+clear 0 47 46 255
+# en: This is my last instruction to you / for this stage. This time, I'll teach / you about the items.
+line 2 14 50 255: Esta é minha última instrução para
+line 18 30 50 255: esta fase. Desta vez, vou te falar
+line 34 46 50 255: sobre os itens.
+# en: (ícones) Fire | Bomb | Remote | Collect 50 for an / extra credit.
+small 83 89 14 44: ^Fogo
+small 83 89 56 92: ^Bomba
+small 83 89 108 152: ^Remota
+small 75 81 154 250: >Pegue 50 e ganhe
+small 85 91 154 250: >1 crédito extra.
+clear 96 191 46 255
+# en: With this special item, [bomb] becomes / a [spike bomb]. This is a powerful bomb that / can destroy all objects.
+line 98 110 47 255: Com este item especial, a {184-198} vira
+line 114 126 47 255: uma {59-73}. É uma bomba poderosa que
+line 130 142 47 255: destrói todos os objetos.
+clear 144 191 0 45
+# en: [spike bomb] has more firepower than a [bomb], and / the damage that an enemy takes from it is / greater. It can only be used once per stage.
+line 146 158 4 255: A {5-19} tem mais poder de fogo que a {188-202},
+line 162 174 4 255: e o dano que o inimigo sofre com ela é
+line 178 190 4 255: maior. Só pode ser usada uma vez por fase.
+# en: Gold card. An item you receive / when certain objectives are / completed. There are 5 per stage.
+line 194 206 50 255: Carta de Ouro. Um item que você
+line 210 222 50 255: ganha ao cumprir certos objetivos.
+line 226 238 50 255: Há 5 em cada fase.
+# en: That's all for items. What I've taught you / this time are only the basics. Try them / out on your own to improve your skills.
+line 242 254 4 255: Isso é tudo sobre os itens. O que te
+line 258 270 4 255: ensinei agora é só o básico. Pratique
+line 274 286 4 255: sozinho para melhorar suas habilidades.
+
+[863]
+# en: Well done, Bomberman. / Altair got away, but that can't / be helped.
+line 2 14 50 255: Muito bem, Bomberman.
+line 18 30 50 255: Altair fugiu, mas não havia o que
+line 34 46 50 255: fazer.
+# en: To be honest, I'm a little disappointed in / you. I'll probably never see you again. / Take care of yourself.
+line 50 62 4 255: Para ser sincero, estou um pouco
+line 66 78 4 255: decepcionado com você. Acho que nunca
+line 82 94 4 255: mais vou te ver. Cuide-se.
+
+[864]
+# en: The 4 of us were barely able to / steal the Omni Cube from him...
+line 10 22 50 255: Nós 4 mal conseguimos roubar
+line 26 38 50 255: o Omni Cube dele...
+# en: Yet you were able to defeat him. I must / respect your abilities, but that doesn't / change the fact that I dislike you!
+line 50 62 4 255: Mesmo assim você o derrotou. Tenho que
+line 66 78 4 255: respeitar sua habilidade, mas isso não
+line 82 94 4 255: muda o fato de que não gosto de você!
+# en: Someday, you and I will settle this. / Until then, take care of yourself!!
+line 106 118 4 255: Um dia, você e eu vamos acertar isso.
+line 122 134 4 255: Até lá, cuide-se!!
+
+[865]
+# en: Let me tell you something about the / one responsible for the attack on / Planet Bomber. His name is, Altair.
+line 2 14 50 255: Deixe-me te contar sobre o
+line 18 30 50 255: responsável pelo ataque ao
+line 34 46 50 255: Planeta Bomber. O nome dele é Altair.
+# en: He drains a planet's energy to power the / Omni Cube. The Omni Cube holds the / power to rule the universe.
+line 50 62 4 255: Ele drena a energia de um planeta para
+line 66 78 4 255: alimentar o Omni Cube. O Omni Cube tem
+line 82 94 4 255: o poder de dominar o universo.
+# en: From the way he takes his time extracting / a planet's energy, it seems he hasn't / figured out how to use the Omni Cube.
+line 98 110 4 255: Pelo tempo que ele leva para extrair a
+line 114 126 4 255: energia de um planeta, parece que ainda
+line 130 142 4 255: não descobriu como usar o Omni Cube.
+# en: Such an operation doesn't require that / much time, however, his incompetence is / helping you - and you should be thankful!
+line 146 158 4 255: Uma operação dessas não exige tanto
+line 162 174 4 255: tempo. Mas a incompetência dele está
+line 178 190 4 255: te ajudando - e você devia agradecer!
+
+[866]
+# en: This time, I'll teach you a useful / technique called, Bomb Lift.
+line 11 23 51 255: Desta vez, vou te ensinar uma
+line 27 39 51 255: técnica útil: a Bomba na Mão.
+clear 48 95 0 255
+# en: If you press the [A] Button, while holding / the [B] Button, a [bomb] will appear in your hand. / You won't have to set a bomb down first.
+line 50 62 2 255: Se apertar o Botão {101-110} enquanto segura
+line 66 78 2 255: o Botão {24-32}, uma {92-106 61-78} surge na sua mão.
+line 82 94 2 255: Não precisa pôr a bomba no chão antes.
+
+[867]
+# en: Do you wonder why Altair wants / to steal the planet's energy, and / destroy the people of this planet?
+line 2 14 50 255: Quer saber por que Altair quer
+line 18 30 50 255: roubar a energia do planeta e
+line 34 46 50 255: destruir o povo deste planeta?
+# en: It's simple, actually. If you want / something, and it's covered with dust, / wouldn't you wipe off the dust?
+line 50 62 4 255: É simples, na verdade. Se você quer
+line 66 78 4 255: algo e está coberto de poeira, você
+line 82 94 4 255: não limpa a poeira?
+# en: To him, the people of Planet Bomber are / specs of dust. If that upsets you, then, / the only answer is to go and defeat him!
+line 98 110 4 255: Para ele, o povo do Planeta Bomber é
+line 114 126 4 255: um grão de poeira. Se isso te irrita,
+line 130 142 4 255: a única resposta é ir lá e derrotá-lo!
+
+[868]
+# Sirius - tutorial de levantar e arremessar (variante do 857)
+clear 0 47 46 255
+# en: Hi Bomberman. / This time, I'm going to teach you / how to lift and throw.
+line 2 14 50 255: Olá, Bomberman.
+line 18 30 50 255: Desta vez, vou te ensinar a
+line 34 46 50 255: levantar e arremessar.
+# en: (diagrama) Use the [B] Button / to lift. | Press the / [B] Button / again / to throw.
+small 52 58 0 38: >Aperte
+small 52 58 50 83: e
+small 64 70 4 70: levante.
+small 50 56 140 182: Aperte
+small 62 68 154 184: outra
+clear 74 75 159 182
+small 76 82 150 184: vez e
+small 86 92 140 205: arremesse.
+clear 96 287 0 255
+# en: There are 3 distances you can throw, / which are determined by how long you / hold the [B] button.
+line 98 110 4 255: Há 3 distâncias de arremesso, que
+line 114 126 4 255: dependem de quanto tempo você
+line 130 142 4 255: segura o Botão {56-64}.
+# en: Hit enemies with a [bomb] to knock them / unconscious. Unconscious enemies can / be picked up and thrown.
+line 146 158 4 255: Acerte inimigos com uma {121-135} para
+line 162 174 4 255: deixá-los tontos. Inimigos tontos
+line 178 190 4 255: podem ser erguidos e arremessados.
+# en: A tough enemy can be knocked / unconscious, picked up and thrown into / another area. Oops, I forgot to mention...
+line 194 206 4 255: Um inimigo resistente pode ser nocauteado,
+line 210 222 4 255: erguido e arremessado para outra
+line 226 238 4 255: área. Ops, esqueci de mencionar...
+# en: Use the [C] Buttons to change the camera / angle, even while the game is paused.
+line 250 262 4 255: Use os Botões {53-61} para mudar o ângulo
+line 266 278 4 255: da câmera, mesmo com o jogo pausado.
