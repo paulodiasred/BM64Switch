@@ -58,12 +58,31 @@ copiada para `sdmc:/switch/bm64recomp/`, então depois você pode apagar a origi
 configurações, os saves, o cache de shaders e os logs (`bm64.log`, `bm64-err.log`). O NSP e o NRO usam a mesma pasta.
 
 **Menu de configurações:** aperte **−** (Minus) para abrir ou fechar. Ele tem as abas:
+- **General:** idioma (inglês ou português).
 - **Graphics:** resolução interna, anti-aliasing, filtro de textura, VSync, FPS e o clock da CPU do Switch.
 - **Sound.**
 - **Controls:** vibração, zona morta e remapeamento.
 - **Cheats.**
 
 As opções são salvas quando o menu fecha.
+
+## Tradução para português
+
+Escolha **Português (Brasil)** em **General → Language / Idioma**. A tradução cobre:
+- os textos do jogo: menus, seleção de arquivo, opções, resultados, nomes das fases, peças do modo Custom, mensagens
+  do Controller Pak e créditos (as letras acentuadas foram adicionadas à fonte do jogo);
+- as 33 conversas do modo Aventura. No jogo elas são imagens, então o texto é redesenhado em português quando elas
+  carregam, mantendo retratos, ícones e os diagramas dos tutoriais.
+
+Os títulos gráficos ("Stage Select", "Single Battle", nomes dos mundos...) continuam em inglês. A tradução fica em
+arquivos de texto simples, fáceis de revisar: `translations/pt-BR.txt` (textos do jogo) e
+`translations/pt-BR-dialogue.txt` (conversas). Um texto que já está na tela muda na tela seguinte.
+
+## Ícone personalizado (por exemplo, a capa)
+
+O repositório vem com um ícone genérico. Para usar outro no seu console, como a capa do jogo, coloque um **JPEG de
+256×256** em `icons/custom-icon.jpg` e compile de novo (`.\build.ps1 switch` ou `.\build.ps1 nsp ...`): o `.nro` e o
+`.nsp` passam a usá-lo. O git ignora esse arquivo, então imagens que não são suas ficam fora do repositório.
 
 ## Compilação
 
@@ -143,6 +162,8 @@ Nada gerado a partir da ROM pode ir para o git: o `.gitignore` já cobre ROMs, `
 - [libultraship](https://github.com/Kenix3/libultraship) e o fork para Switch de
   [YoshiCrystal9](https://github.com/YoshiCrystal9/libultraship).
 - [RT64](https://github.com/rt64/rt64): GBI estendido e `file_to_c`.
+- [Liberation Fonts](https://github.com/liberationfonts/liberation-fonts) (SIL Open Font License 1.1): fonte das
+  conversas traduzidas (`translations/FONT-LICENSE.txt`).
 - [Bomberhackers/bm64](https://github.com/Bomberhackers/bm64): decompilação e `bm64decompress`.
 
 A licença original do projeto está em [LICENSE.txt](LICENSE.txt).

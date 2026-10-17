@@ -57,12 +57,31 @@ Any format (`.z64`, `.n64` or `.v64`) and any file name. On first launch the ROM
 shader cache and the logs (`bm64.log`, `bm64-err.log`). The NSP and the NRO share it.
 
 **Settings menu:** press **−** (Minus) to open or close it. It has these tabs:
+- **General:** language (English or Portuguese).
 - **Graphics:** internal resolution, anti-aliasing, texture filtering, VSync, FPS and the Switch CPU clock.
 - **Sound.**
 - **Controls:** rumble, deadzone and remapping.
 - **Cheats.**
 
 Settings are saved when the menu closes.
+
+## Portuguese translation
+
+Choose **Português (Brasil)** in **General → Language / Idioma**. It translates:
+- the game's text: menus, file select, options, results, stage names, Custom parts, Controller Pak messages and
+  credits (accented letters are added to the game's font);
+- all 33 conversations of Adventure mode. They're images in the game, so their text is redrawn in Portuguese when they
+  load, keeping portraits, icons and the tutorial diagrams.
+
+Graphic titles ("Stage Select", "Single Battle", world names...) stay in English. The translation lives in plain
+text files that are easy to review: `translations/pt-BR.txt` (game text) and `translations/pt-BR-dialogue.txt`
+(conversations). Text that already appears on screen changes on the next screen.
+
+## Custom icon (e.g. the box art)
+
+The repository ships a generic icon. To use another one (for example the game's box art) on your own console, put a
+**256×256 JPEG** at `icons/custom-icon.jpg` and build again (`.\build.ps1 switch` or `.\build.ps1 nsp ...`): the
+`.nro` and the `.nsp` use it instead. That file is ignored by git, so artwork you don't own stays out of the repository.
 
 ## Building
 
@@ -141,6 +160,8 @@ Nothing generated from the ROM may be committed. The `.gitignore` already covers
 - [libultraship](https://github.com/Kenix3/libultraship) and the Switch fork by
   [YoshiCrystal9](https://github.com/YoshiCrystal9/libultraship).
 - [RT64](https://github.com/rt64/rt64): extended GBI and `file_to_c`.
+- [Liberation Fonts](https://github.com/liberationfonts/liberation-fonts) (SIL Open Font License 1.1): the font of the
+  translated conversations (`translations/FONT-LICENSE.txt`).
 - [Bomberhackers/bm64](https://github.com/Bomberhackers/bm64): decompilation and `bm64decompress`.
 
 The original project's license is in [LICENSE.txt](LICENSE.txt).
